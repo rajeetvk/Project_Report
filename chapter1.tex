@@ -56,19 +56,25 @@ which is a design flaw this project tries to address.
 
 \section{Problem Statement}
 
-The problem addressed in this project can be stated as follows. Given a short piece of text from
-a social media platform, build a system that:
+The problem addressed in this project can be stated as follows. Given a short piece of text
+from a social media platform, the objective is to build a system that:
 
 \begin{enumerate}
-    \item Classifies the text into one of three emotion categories: Positive, Negative, or Neutral.
-    \item Detects whether the text is actually too ambiguous to classify confidently, and if so,
+    \item Classifies the text into one of three emotion categories: Positive, Negative, or
+    Neutral.
+    \item Determines whether the text is too ambiguous to be classified confidently, and if so,
     returns an Ambiguous label instead.
 \end{enumerate}
 
-The challenge is not just building a classifier. The challenge is knowing when not to classify.
-Standard machine learning classifiers optimize for accuracy on a fixed set of classes. They do
-not have a natural mechanism to express uncertainty about whether a sample belongs to any
-particular class. This project builds that mechanism.
+The challenge is not merely building an accurate classifier, but determining when a
+classification should not be made. Standard machine learning models are designed to optimize
+accuracy over a fixed set of classes and therefore always produce a definitive prediction, even
+when the input is inherently unclear.
+
+Such models lack a mechanism to represent uncertainty or ambiguity in human language. This
+project addresses that limitation by introducing a system that is capable of identifying and
+explicitly handling ambiguous emotional expressions, rather than forcing potentially misleading
+classifications.
 
 \section{Objectives}
 

@@ -5,17 +5,24 @@
 \addcontentsline{toc}{chapter}{Abstract}
 \vspace{1.5cm}
 
-Emotion detection from social media text is a complex task exacerbated by informal language,
-class imbalance, and the inherent ambiguity of human expression. Traditional classification
-systems typically enforce a definitive prediction even when the input is semantically unclear
-or resides at the boundary between emotional categories. This project introduces a novel
-emotion detection framework that incorporates a dedicated ambiguity detection mechanism.
-We leverage Topological Data Analysis (TDA), specifically Vietoris-Rips persistent homology,
-to analyze the local geometric structure of sentence embeddings surrounding each query. By
-integrating this topological complexity—quantified through H1 loops—with the classifier’s
-confidence gap, the system can reliably assign an “Ambiguous” label when appropriate, thereby
-abstaining from misleading predictions. The system utilizes a hybrid approach combining TF-
-IDF features alongside all-mpnet-base-v2 embeddings, classified via one-vs-rest XGBoost
-models. Evaluated on the GoEmotions dataset, our approach effectively captures both explicit
-emotional signals and genuine semantic ambiguity without resorting to synthetic oversampling,
-offering a robust and interpretable framework for natural language understanding.
+This work presents a novel approach for mental health and emotion detection from social media
+text, addressing the limitations of conventional Natural Language Processing (NLP) models in
+handling ambiguity and contextual uncertainty. Traditional models based on TF-IDF and
+classification algorithms often fail to capture nuanced emotional states, particularly in
+sentences with overlapping or unclear sentiment.
+
+To overcome this, the proposed system integrates Topological Data Analysis (TDA) with machine
+learning to analyze the geometric structure of text embeddings. By applying persistent homology
+on vector representations, the model identifies structural patterns that indicate ambiguity in
+emotional expression. The classification pipeline is built using TF-IDF features combined with
+a Logistic Regression model, ensuring computational efficiency while maintaining
+interpretability.
+
+A key contribution of this work is the introduction of an ambiguity detection mechanism,
+enabling the system to flag uncertain emotional predictions rather than forcing incorrect
+classifications. Experimental results demonstrate that while the baseline model achieves
+moderate performance, the integration of TDA enhances the system's ability to identify
+ambiguous inputs and improves overall robustness.
+
+This approach provides a foundation for more reliable mental health monitoring systems, where
+understanding uncertainty is as critical as prediction accuracy.

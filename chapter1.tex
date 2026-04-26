@@ -1,0 +1,128 @@
+\chapter{Introduction}
+
+\section{Introduction}
+
+Social media has changed the way people communicate. Platforms like Twitter, Reddit, and
+Instagram have become spaces where people share their thoughts, feelings, and reactions in real
+time. Every day, millions of posts are written. Some express clear happiness or sadness. Many
+others are confusing, sarcastic, or somewhere in between.
+
+Understanding the emotion behind a social media post is useful for many reasons. Companies
+want to know what customers think about their products. Researchers study mental health trends
+by analyzing what people write online. News organizations want to understand how the public
+is reacting to events. In all these cases, someone or something needs to read large amounts of
+text and decide what emotion is being expressed.
+
+This project builds a system that does exactly that. It reads a social media post and decides
+whether the emotion is Positive, Negative, Neutral, or Ambiguous. The last category is what
+makes this project different from most existing systems.
+
+\section{Background and Motivation}
+
+Emotion detection from text is not a new problem. Researchers have been working on it for
+many years. But most systems that have been built share one common limitation: they always
+give a definite answer. They look at the input, run some computation, and return one class. They
+do this even when the text is genuinely unclear.
+
+Consider the sentence ``I am fine.'' On the surface, it looks positive. But in many situations,
+it is used sarcastically. A person who is upset but does not want to talk about it might say ``I am
+fine'' and mean exactly the opposite. A standard classifier will almost always return
+\textsc{positive} for this sentence. That is not really honest.
+
+This project is built on the idea that uncertainty is a valid and useful output. When a system
+does not know something, it should say so. This is especially important for emotion detection,
+where the cost of a wrong confident prediction can be higher than simply flagging the input as
+unclear.
+
+The second motivation for this project is the use of geometric structure to detect ambiguity.
+When text is converted into a vector using a language model, texts with similar meanings end
+up close together in that vector space. What this project asks is: what does the neighbourhood
+around an input look like geometrically? If the neighbourhood is clean and well-organized, the
+input is probably easy to classify. If the neighbourhood is complicated, the input is probably in
+a border region between emotion clusters, which is a sign of ambiguity.
+
+To measure this geometric complexity, the project uses Topological Data Analysis (TDA),
+specifically a technique called persistent homology. This is not something that has been tried for
+ambiguity detection in social media emotion analysis before, which is the research contribution
+this project makes.
+
+A third motivation comes from looking at how previous models have performed on the
+GoEmotions dataset. Models like BERT-based classifiers and SVM systems that were trained
+on GoEmotions all struggle with the same problem: they do very well on the majority classes
+and poorly on minority ones, and they never say when they are unsure. The GoEmotions dataset
+is also known to have a lot of label noise and ambiguous samples because it was labelled by
+crowd workers who did not always agree. Standard models treat all samples as equally clear,
+which is a design flaw this project tries to address.
+
+\section{Problem Statement}
+
+The problem addressed in this project can be stated as follows. Given a short piece of text from
+a social media platform, build a system that:
+
+\begin{enumerate}
+    \item Classifies the text into one of three emotion categories: Positive, Negative, or Neutral.
+    \item Detects whether the text is actually too ambiguous to classify confidently, and if so,
+    returns an Ambiguous label instead.
+\end{enumerate}
+
+The challenge is not just building a classifier. The challenge is knowing when not to classify.
+Standard machine learning classifiers optimize for accuracy on a fixed set of classes. They do
+not have a natural mechanism to express uncertainty about whether a sample belongs to any
+particular class. This project builds that mechanism.
+
+\section{Objectives}
+
+The main objectives of this project are as follows.
+
+\begin{enumerate}
+    \item Build a sentiment classification system that works on informal social media text from
+    the GoEmotions dataset.
+    \item Use Topological Data Analysis, specifically Vietoris-Rips persistent homology, to
+    measure the geometric complexity of the neighbourhood of each input in the embedding
+    space.
+    \item Combine topological complexity with classifier confidence to produce a principled
+    ambiguity signal.
+    \item Map the 28-class GoEmotions labels to three classes (Positive, Negative, Neutral)
+    in a way that preserves the semantic groupings.
+    \item Handle the class imbalance in the dataset without using synthetic data generation
+    techniques that would distort the topological structure.
+    \item Deploy the final system as an interactive command-line tool that explains its decisions.
+\end{enumerate}
+
+\section{Scope}
+
+The system works with English text. It is trained on Reddit comments from the GoEmotions
+dataset. It returns one of four outputs: Positive, Negative, Neutral, or Ambiguous. The system
+is designed to run on a standard laptop CPU for inference, though training benefits from GPU
+availability.
+
+The system does not handle audio, images, or video. It does not track user history or learn from
+new inputs after training. It operates as a single-query system where each input is classified
+independently.
+
+\section{Significance and Contribution}
+
+The key contribution of this project is the use of \textbf{persistent homology as an ambiguity
+signal at inference time}. When a new text arrives, the system finds its nearest neighbours in
+the training embedding space and computes a fresh Vietoris-Rips persistence diagram from
+those neighbours. The number of one-dimensional holes (H1 features) in that diagram measures
+how geometrically tangled the neighbourhood is. A high count means the input is in a
+complicated part of the space, which the system interprets as a sign of ambiguity.
+
+This is different from existing approaches to uncertainty in NLP in two ways. First, it is
+structural rather than just probabilistic. Most uncertainty methods rely on dropout-based
+sampling or ensemble disagreement. This project uses the actual geometry of the data. Second,
+it is computed fresh at inference time using real training data, not a precomputed approximation.
+
+The approach is also interpretable. When the system flags a text as Ambiguous, it can explain
+exactly which rule triggered the decision: extreme loop count, moderate loop count combined
+with low confidence gap, or very low confidence gap alone. This kind of explanation is useful in
+practice.
+
+\section{Report Structure}
+
+Chapter~2 reviews existing work on sentiment analysis, emotion detection, uncertainty in NLP,
+and topological data analysis for text. Chapter~3 describes the requirements of the system.
+Chapter~4 covers the system design and architecture. Chapter~5 explains the implementation
+in detail. Chapter~6 presents the results and evaluation. Chapter~7 covers testing. Chapter~8
+concludes the report and discusses future directions.

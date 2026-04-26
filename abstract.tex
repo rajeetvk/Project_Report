@@ -1,0 +1,21 @@
+\begin{flushleft}
+    {\Huge\bfseries Abstract}
+\end{flushleft}
+
+\addcontentsline{toc}{chapter}{Abstract}
+\vspace{1.5cm}
+
+Emotion detection from social media text is a complex task exacerbated by informal language,
+class imbalance, and the inherent ambiguity of human expression. Traditional classification
+systems typically enforce a definitive prediction even when the input is semantically unclear
+or resides at the boundary between emotional categories. This project introduces a novel
+emotion detection framework that incorporates a dedicated ambiguity detection mechanism.
+We leverage Topological Data Analysis (TDA), specifically Vietoris-Rips persistent homology,
+to analyze the local geometric structure of sentence embeddings surrounding each query. By
+integrating this topological complexity—quantified through H1 loops—with the classifier’s
+confidence gap, the system can reliably assign an “Ambiguous” label when appropriate, thereby
+abstaining from misleading predictions. The system utilizes a hybrid approach combining TF-
+IDF features alongside all-mpnet-base-v2 embeddings, classified via one-vs-rest XGBoost
+models. Evaluated on the GoEmotions dataset, our approach effectively captures both explicit
+emotional signals and genuine semantic ambiguity without resorting to synthetic oversampling,
+offering a robust and interpretable framework for natural language understanding.

@@ -1,0 +1,164 @@
+\chapter{Literature Survey}
+
+\section{Overview}
+
+This chapter reviews the existing work that is relevant to this project. The main areas are
+sentiment analysis and emotion detection, handling ambiguity and uncertainty in natural language
+processing, topological data analysis for text, and the specific problems that have been observed
+with existing models on the GoEmotions dataset.
+
+\section{Sentiment Analysis}
+
+Sentiment analysis is the task of identifying whether a piece of text expresses a positive,
+negative, or neutral opinion. It is one of the oldest and most studied problems in natural language
+processing.
+
+Early approaches were lexicon-based. They worked by assigning positive or negative scores
+to individual words and then combining those scores to get an overall sentiment. VADER~\cite{vader}
+is a well-known example of this type of system. It was designed specifically for social media
+text and handles punctuation, capitalization, and emoticons as signals of sentiment intensity. It
+is fast and works reasonably well for clear, unambiguous text. However, it completely fails on
+sarcasm and does not have any mechanism to say when it is unsure.
+
+Machine learning approaches improved on this. Systems based on Naive Bayes, Support Vector
+Machines (SVM), and logistic regression used bag-of-words representations. These models
+could learn from examples and generalize beyond a fixed vocabulary. They performed better on
+benchmark datasets but still struggled with informal language, negations, and short posts where
+context is limited.
+
+The deep learning era brought significant improvements. TextCNN~\cite{textcnn} applied convolutional
+filters over word embeddings to capture local phrases and patterns. Recurrent networks,
+especially LSTMs, captured longer dependencies in a sequence. Attention mechanisms allowed
+models to focus on the most relevant parts of the input.
+
+BERT~\cite{bert} changed the field significantly. It was pre-trained on a massive amount of text using
+a masked language modeling objective, which gave it a deep understanding of context.
+Fine-tuned BERT models reached state-of-the-art results on almost every sentiment and emotion
+benchmark. RoBERTa and DeBERTa further refined this approach.
+
+The problem is that all of these systems, from VADER to BERT fine-tuned models, \textbf{always
+return a label}. They have no built-in way to say that the input is unclear. They are trained
+to minimize classification error on a fixed label set, and that is all they do.
+
+\section{Emotion Detection and the GoEmotions Dataset}
+
+Emotion detection is a more specific version of sentiment analysis. The goal is to identify
+which particular emotion a text expresses, such as joy, sadness, anger, fear, or disgust. This
+is harder than binary sentiment classification because the boundaries between emotions are not
+sharp.
+
+The GoEmotions dataset~\cite{goemotions} is one of the most important resources for this task. It was
+released by Google and contains around 58,000 Reddit comments labelled by crowd workers
+with 28 emotion categories. Each comment can have multiple labels. The dataset is publicly
+available and has been widely used in research.
+
+Several important problems have been identified with models trained on GoEmotions:
+
+The first is \textbf{class imbalance}. The Neutral class makes up a large portion of the dataset.
+Many specific emotion categories like grief, nervousness, and pride have very few examples.
+Models trained on this data tend to predict the majority classes much more often and perform
+poorly on minority classes. This is visible in the classification reports of most published systems
+on this dataset.
+
+The second problem is \textbf{label ambiguity}. Because the dataset was labelled by crowd
+workers, there is significant disagreement between annotators. A comment like ``Well, that
+happened'' received different labels from different people. Some saw it as neutral, some as
+surprised, some as slightly negative. The final label is determined by majority vote, which hides
+this uncertainty. Models trained on such data are essentially learning to predict the most common
+human interpretation, not the correct one, and there may not be a single correct one.
+
+The third problem is the presence of \textbf{informal language}. Reddit comments contain slang,
+abbreviations, and expressions that are not well-represented in standard training data. Words
+like ``yolo'', ``fomo'', ``lol'', and ``idk'' carry emotional meaning but are often handled poorly
+by models trained on more formal text. The embedding models used to represent these words
+may not give them accurate positions in the semantic space.
+
+Several BERT-based systems have been published on GoEmotions. Most report accuracy in the
+range of 0.46 to 0.58 on the full 28-class problem. On the simplified 3-class version (Positive,
+Negative, Neutral), results are higher but still reflect the difficulty of the dataset. None of
+these systems include any mechanism for detecting when a sample is too ambiguous to classify
+reliably.
+
+\section{Ambiguity and Uncertainty in Natural Language Processing}
+
+The question of how to handle uncertainty in NLP predictions has been studied in several
+different ways.
+
+Bayesian deep learning~\cite{bayesian} approaches model uncertainty by treating model weights as
+distributions rather than fixed values. At test time, dropout is kept active and multiple predictions
+are made. The variance across these predictions estimates model uncertainty. This works but
+requires multiple forward passes and adds computational cost.
+
+Conformal prediction is another framework that produces prediction sets rather than single
+labels. Instead of saying ``this is Positive'', a conformal predictor might say ``this is Positive or
+Ambiguous, and I am 90\% confident the true label is in this set.'' This is more honest but
+harder to explain to a non-technical user.
+
+Selective prediction~\cite{selective} allows a model to abstain from making a prediction when it is below
+a confidence threshold. This is close to what this project does, but it relies only on the
+classifier's own confidence. It does not use any external signal about the structure of the data.
+
+The key limitation of all these approaches is that they use the model's own output to
+estimate uncertainty. If the model is confidently wrong, none of these methods will catch it.
+What is needed is an external signal that looks at the data itself, not just at what the model says.
+
+\section{Topological Data Analysis in Natural Language Processing}
+
+Topological Data Analysis (TDA) is a field of mathematics that studies the shape of data. The
+main tool is persistent homology~\cite{tda}, which tracks the birth and death of topological features as
+a parameter is varied. The key features are connected components (H0 features) and loops or
+holes (H1 features).
+
+The Vietoris-Rips complex is the most common construction used in practice. Given a set of
+points and a scale parameter, it builds a simplicial complex by connecting points that are closer
+than the scale. As the scale increases, new components connect and new loops appear and then
+fill in. Persistent homology records which features appear and how long they persist. Features
+that persist for a long time are considered genuinely structural, while features that appear and
+disappear quickly are considered noise.
+
+TDA has been applied to NLP in several ways. Zhu~\cite{zhu} applied persistent homology to text
+classification and showed that topological features captured information that was not present in
+bag-of-words representations. Michel et al.~\cite{michel} analyzed the topology of sentence embedding
+spaces and found that the topology changes depending on the semantic content of the text.
+
+What this project does differently is apply persistent homology at the \textbf{neighbourhood
+level at inference time}. Instead of computing topology over the whole dataset, it computes a
+fresh persistence diagram for the 24 nearest neighbours of each new input. This local topology
+captures whether the input is sitting in a clean region of the space or in a boundary region
+between clusters. The number of H1 loops in this local diagram is used as a signal of ambiguity.
+
+This approach has not been used for ambiguity detection in social media text, to the best
+knowledge of the author. It is the main technical contribution of this project.
+
+\section{Sentence Embeddings}
+
+The system uses SentenceTransformers~\cite{sbert} to convert text into dense vector representations.
+The specific model used is \texttt{all-mpnet-base-v2}, which produces 768-dimensional vectors.
+This model was trained to place semantically similar sentences close to each other in the vector
+space.
+
+Modern embedding models like this one are trained on very large datasets and learn to handle
+most of the variation in natural language automatically. They do not require explicit
+preprocessing steps like tokenization, stopword removal, or stemming to be performed manually.
+In fact, applying such preprocessing can hurt performance because it removes information that
+the embedding model would have used.
+
+This is an important design choice in this project and is discussed in more detail in the
+implementation chapter.
+
+\section{Gaps in Existing Work and How This Project Addresses Them}
+
+Looking at all of the above, the main gaps in existing work are as follows.
+
+No existing emotion detection system trained on GoEmotions includes an ambiguity detection
+mechanism. They all always return a confident label.
+
+Systems that do model uncertainty in NLP rely on the model's own output, not on the structure
+of the data. If the model is confidently wrong, they do not help.
+
+No published work uses local persistent homology at inference time as an ambiguity signal for
+social media text.
+
+This project fills all three gaps. It builds an emotion classifier, adds a topological ambiguity
+detector based on local geometry, and combines the two into a system that knows when to
+abstain from giving a confident answer.

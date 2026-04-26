@@ -1,0 +1,174 @@
+\chapter{Requirement Engineering}
+
+\section{Overview}
+
+This chapter describes what the system needs to do and how it should behave. Requirements
+are divided into functional requirements, which describe what the system does, and
+non-functional requirements, which describe how well it does it. We also describe the data
+requirements and the specific rules for ambiguity detection.
+
+\section{Stakeholder Identification}
+
+The people who would use or be affected by this system include the following.
+
+\textbf{Researchers and data analysts} who want to understand emotional trends in large amounts
+of social media data. They need a system that is reliable and gives useful outputs, including
+when the system is unsure.
+
+\textbf{Developers} who want to integrate emotion detection into a larger application, such as a
+content moderation system or a mental health monitoring tool. They need a system that is
+well-documented and produces structured output.
+
+\textbf{End users} who interact with the system directly by typing a sentence and wanting to know
+its emotional content. They need clear, understandable outputs.
+
+\section{Functional Requirements}
+
+The following functional requirements define what the system must do.
+
+\begin{description}[leftmargin=2.5cm, style=nextline]
+    \item[FR1.] The system must accept any piece of English text as input through a command-line interface.
+    \item[FR2.] The system must classify the input into one of four categories: Positive, Negative, Neutral, or Ambiguous.
+    \item[FR3.] The system must convert input text into dense semantic vectors using a pre-trained sentence embedding model.
+    \item[FR4.] The system must extract lexical features from input text using TF-IDF with a vocabulary of at least 3000 terms.
+    \item[FR5.] The system must find the nearest neighbours of the input in the training embedding space using cosine distance.
+    \item[FR6.] The system must compute Vietoris-Rips persistent homology on the neighbourhood of the input, capturing H0 and H1 features.
+    \item[FR7.] The system must extract a Persistence Landscape representation from the persistence diagram.
+    \item[FR8.] The system must combine semantic, lexical, and topological features into a single feature vector for classification.
+    \item[FR9.] The system must use XGBoost classifiers trained in a one-vs-rest fashion for the three emotion classes.
+    \item[FR10.] The system must compute the confidence gap between the top two class probabilities.
+    \item[FR11.] The system must apply the ambiguity decision rules to determine the final output.
+    \item[FR12.] The system must display debug information with each prediction, including the probabilities, confidence gap, loop count, and the trigger reason if the output is Ambiguous.
+    \item[FR13.] The system must load a pre-trained model from disk at startup without requiring retraining.
+    \item[FR14.] The system must run in an interactive loop, allowing the user to test multiple inputs in a single session.
+\end{description}
+
+\section{Non-Functional Requirements}
+
+The following non-functional requirements describe the quality of the system.
+
+\begin{description}[leftmargin=2.5cm, style=nextline]
+    \item[NFR1.] \textbf{Performance:} The system must return a prediction in under 5 seconds per input on a standard laptop CPU.
+    \item[NFR2.] \textbf{Portability:} The system must run on any machine with Python 3.10 or later installed. It must not require a GPU for inference.
+    \item[NFR3.] \textbf{Reliability:} The system must handle unusual inputs, very short inputs, and empty inputs without crashing.
+    \item[NFR4.] \textbf{Explainability:} When a text is flagged as Ambiguous, the system must tell the user which rule triggered the decision.
+    \item[NFR5.] \textbf{Reproducibility:} Given the same input, the system must always produce the same output.
+    \item[NFR6.] \textbf{Scalability:} The model must be trained once and saved. It must not require retraining to handle new inputs.
+\end{description}
+
+\section{Data Requirements}
+
+\begin{description}[leftmargin=2.5cm, style=nextline]
+    \item[DR1.] The system must use the GoEmotions dataset (simplified version) for training and evaluation.
+    \item[DR2.] The 28 GoEmotions emotion categories must be mapped to three classes: Positive, Negative, and Neutral.
+    \item[DR3.] The full training split of approximately 43,000 samples must be used.
+    \item[DR4.] The full test split of approximately 5,400 samples must be used for evaluation.
+    \item[DR5.] The trained model, the TF-IDF vectorizer, the nearest-neighbour index, and the training embeddings must all be saved to disk after training so that inference does not require retraining.
+\end{description}
+
+\section{Class Imbalance Handling Requirements}
+
+The GoEmotions dataset is not evenly distributed across the three classes. After mapping, the
+Neutral class has significantly more samples than Positive or Negative. The system must handle
+this imbalance. The following requirements apply.
+
+\begin{description}[leftmargin=2.5cm, style=nextline]
+    \item[IR1.] The system must not use SMOTE or any other synthetic data generation technique.
+    The reason is that SMOTE creates interpolated points in the embedding space. Since the
+    topological analysis depends on the real geometric structure of the data, synthetic points
+    would create artificial topology that does not correspond to real language. This would
+    make the ambiguity detection unreliable.
+    \item[IR2.] The system must handle imbalance through threshold tuning. Instead of using a
+    fixed 0.5 decision threshold for each classifier, the threshold for each class is adjusted
+    based on the class distribution. This allows the system to be more or less sensitive to
+    each class without distorting the underlying data.
+\end{description}
+
+\section{Ambiguity Detection Rules}
+
+The ambiguity detection mechanism is a central requirement of this project. The following rules
+define when a text is classified as Ambiguous.
+
+\begin{description}[leftmargin=2.5cm, style=nextline]
+    \item[AR1.] If the number of H1 loops in the local persistence diagram is 14 or more, the
+    text is Ambiguous regardless of the classifier probabilities. This is called the
+    \textit{extreme geometry condition}.
+    \item[AR2.] If the number of H1 loops is 10 or more, and the confidence gap between the
+    top two predicted classes is less than 0.30, the text is Ambiguous. This is called the
+    \textit{moderate geometry combined with low confidence condition}.
+    \item[AR3.] If the confidence gap between the top two predicted classes is less than 0.10,
+    regardless of the loop count, the text is Ambiguous. This is called the
+    \textit{very low confidence condition}.
+    \item[AR4.] If none of the above conditions are met, the text receives the label of the class
+    with the highest probability.
+\end{description}
+
+The thresholds (14, 10, and 0.30) were selected based on experimentation. The loop count
+thresholds were chosen by looking at the distribution of loop counts across samples and
+identifying values that separated clearly ambiguous inputs from clearly unambiguous ones. The
+confidence gap threshold of 0.30 was chosen because below this value, the classifier output is
+not stable enough to be trusted.
+
+\section{Technology Stack}
+
+Table~\ref{tab:techstack} lists the key technologies used to build the system.
+
+\begin{table}[H]
+\centering
+\caption{Technology Stack}
+\label{tab:techstack}
+\begin{tabular}{lll}
+\toprule
+\textbf{Category} & \textbf{Technology} & \textbf{Purpose} \\
+\midrule
+Programming Language & Python 3.10+        & Core implementation \\
+Machine Learning     & XGBoost             & One-vs-Rest classification \\
+NLP Embeddings       & SentenceTransformers & Semantic embeddings (all-mpnet-base-v2) \\
+Feature Extraction   & scikit-learn        & TF-IDF vectorization, KNN search \\
+Topological Analysis & Ripser              & Vietoris-Rips persistent homology \\
+Topology Processing  & Persim              & Persistence Landscape computation \\
+Data Handling        & NumPy, Pandas       & Array operations, data manipulation \\
+Dataset              & GoEmotions          & Training and evaluation data \\
+Model Persistence    & Joblib              & Saving and loading trained models \\
+Development IDE      & VS Code             & Code editing and debugging \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The system is built entirely in Python and does not require a GPU for inference. All dependencies
+are installable via \texttt{pip} and are compatible with standard laptops and desktops running
+Windows, macOS, or Linux.
+
+\section{Requirements Summary}
+
+Table~\ref{tab:req_summary} summarizes the key requirements of the system.
+
+\begin{table}[H]
+\centering
+\caption{Summary of Key System Requirements}
+\label{tab:req_summary}
+\begin{tabular}{llp{7cm}l}
+\toprule
+\textbf{ID} & \textbf{Type} & \textbf{Requirement} & \textbf{Priority} \\
+\midrule
+FR1  & Functional     & Accept English text input                              & High   \\
+FR2  & Functional     & Output Positive / Negative / Neutral / Ambiguous       & High   \\
+FR3  & Functional     & Compute local topology at inference                    & High   \\
+FR4  & Functional     & Apply ambiguity decision rules                         & High   \\
+FR5  & Functional     & Display debug information per query                    & Medium \\
+FR13 & Functional     & Load pre-trained model from disk                       & High   \\
+NFR1 & Non-Functional & Respond in under 5 seconds                             & High   \\
+NFR2 & Non-Functional & Run without GPU for inference                          & High   \\
+NFR4 & Non-Functional & Explain why text is flagged as Ambiguous               & Medium \\
+IR1  & Imbalance      & Do not use SMOTE or synthetic data generation          & High   \\
+IR2  & Imbalance      & Use threshold tuning for imbalance handling            & High   \\
+AR1  & Ambiguity      & Flag on extreme loop count ($\geq 14$)                 & High   \\
+AR2  & Ambiguity      & Flag on moderate topology + low confidence             & High   \\
+AR3  & Ambiguity      & Flag on very low confidence gap ($< 0.10$)             & High   \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+As shown in Table~\ref{tab:req_summary}, high priority is given to the core classification and
+ambiguity detection mechanisms, while user interface and debug features are treated as medium
+priority.

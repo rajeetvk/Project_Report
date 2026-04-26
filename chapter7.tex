@@ -1,0 +1,132 @@
+\chapter{Conclusion and Future Work}
+
+\section{Summary}
+
+This project built an emotion detection system for social media text that does something most
+existing systems do not: it knows when not to answer. Instead of always returning a confident
+label, the system can output Ambiguous when the input text is genuinely unclear or sits in a
+boundary region between emotion classes.
+
+The system combines three types of features. Semantic embeddings from the
+\texttt{all-mpnet-base-v2} model capture the meaning of the text. TF-IDF features capture the
+specific words and phrases present. Topological features from Vietoris-Rips persistent homology
+capture the geometric structure of the neighbourhood around the input in the embedding space.
+
+Three XGBoost classifiers trained in a one-vs-rest configuration produce probabilities for the
+Positive, Negative, and Neutral classes. On top of this, an ambiguity detection layer combines
+two signals: the number of H1 loops in the local persistence diagram and the confidence gap
+between the top two class probabilities. Three decision rules convert these signals into a final
+output, which can be Positive, Negative, Neutral, or Ambiguous.
+
+\section{What Was Achieved}
+
+The key achievements of this project are:
+
+A working emotion classifier was built on the full GoEmotions dataset (43,410 training samples,
+5,427 test samples), achieving an accuracy of 0.59 and a weighted F1 score of 0.60. These
+numbers reflect the genuine difficulty of the dataset, not a fundamental failure of the approach.
+
+A topological ambiguity detection mechanism was introduced. This mechanism uses local
+Vietoris-Rips persistent homology computed fresh at inference time for every input. The number
+of H1 loops in the persistence diagram provides a geometric signal of ambiguity that is
+independent of the classifier's output.
+
+The system correctly identifies genuinely ambiguous sentences. ``i dont know how i feel''
+returns \textsc{ambiguous} due to an extreme loop count of 15. ``i will kill you'' returns
+\textsc{ambiguous} due to a very low confidence gap of 0.06. ``do this'' returns
+\textsc{ambiguous} due to moderate topology combined with low classifier confidence.
+
+The system provides interpretable outputs. When it returns \textsc{ambiguous}, it explains
+which rule triggered the decision. This is important for practical deployment where users need
+to understand and trust the system's decisions.
+
+\section{Advantages of the Approach}
+
+The main advantage of using topology is that it provides a signal that is independent of the
+classifier. A classifier can be trained to be confident on ambiguous inputs if it has seen many
+similar examples. Topology looks at the structure of the data itself.
+
+The approach is also principled. The connection between geometric complexity (H1 loops) and
+semantic ambiguity (text near the boundary of emotion clusters) is not arbitrary. It reflects a
+real property of the embedding space: texts that are semantically ambiguous are found in
+geometrically complicated regions.
+
+The system is also explainable. Every output comes with a reason. This is a property that most
+deep learning systems do not have.
+
+\section{Limitations}
+
+The system has the following known limitations:
+
+\begin{itemize}
+    \item \textbf{Threshold Calibration:} The thresholds for ambiguity detection (14, 10, 0.30,
+    0.10) were set manually based on experimentation. Without a labelled ambiguity dataset,
+    these cannot be calibrated systematically.
+
+    \item \textbf{Social Ambiguity Blind Spots:} The system cannot detect social ambiguity
+    that is not visible in the embedding space. ``I am fine'' is socially complex but does
+    not appear geometrically ambiguous because the training data biases its neighbourhood
+    toward clearly Positive samples.
+
+    \item \textbf{Slang and Informal Language:} The system struggles with slang and informal
+    abbreviations. Words like ``yolo'', ``fomo'', ``lol'', and ``idk'' carry emotional meaning
+    but may not be well-represented in the training data. The embedding model may not
+    place such terms accurately, leading to incorrect or ambiguous predictions.
+
+    \item \textbf{Inference Bottleneck:} Inference is slower than a standard classifier because
+    of the live topology computation. For large-scale systems, this would need to be
+    optimized.
+
+    \item \textbf{Language Constraint:} The system works only on English text.
+\end{itemize}
+
+\section{Future Work}
+
+There are several directions where this work can be extended:
+
+\begin{itemize}
+    \item \textbf{Labelled Ambiguity Dataset:} The most important improvement would be
+    creating a labelled ambiguity dataset. If a set of social media posts were annotated by
+    humans for whether they are genuinely ambiguous, the ambiguity thresholds could be
+    calibrated properly and the system's performance on ambiguity detection could be
+    measured numerically.
+
+    \item \textbf{Faster Topology Computation:} A faster topology computation method would
+    make the system more practical for deployment. One option is to precompute topological
+    signatures for regions of the embedding space and do a lookup at inference time instead
+    of computing fresh persistence for every input.
+
+    \item \textbf{Fine-Grained Emotion Classes:} Extending the system to handle fine-grained
+    emotion classes, rather than the collapsed three-class version, would be a more
+    challenging but more useful task. The GoEmotions dataset supports 28 classes, and a
+    system that can detect ambiguity at this level would be much more informative.
+
+    \item \textbf{Sarcasm and Irony Detection:} Adding a dedicated sarcasm and irony
+    detection module would address many of the cases where social ambiguity is not
+    captured by the topological signal. Sarcasm in particular is common in Reddit comments
+    and is a major source of error in sentiment analysis systems.
+
+    \item \textbf{Multilingual Support:} Supporting multiple languages through multilingual
+    embeddings would make the system applicable to a much wider range of social media
+    content.
+
+    \item \textbf{User Interface:} Finally, a web interface would make the system accessible
+    to non-technical users. The current command-line interface is sufficient for development
+    and testing but not for general use.
+\end{itemize}
+
+\section{Final Thoughts}
+
+Emotion detection is a genuinely hard problem. Human language is full of nuance,
+context-dependence, and social complexity. A system that always gives a confident answer is
+not always being honest.
+
+This project shows that it is possible to build a system that knows what it does not know and
+says so clearly. The combination of geometric structure from topology and probabilistic output
+from a classifier is a promising direction for building more reliable and trustworthy natural
+language processing systems. The GoEmotions dataset, with all its noise and imbalance,
+provides a realistic and challenging test bed for exploring this direction.
+
+The work here is a starting point. There is much more to be done in characterizing ambiguity in
+text, calibrating geometric signals, and connecting mathematical structures from topology to the
+practical needs of emotion understanding.

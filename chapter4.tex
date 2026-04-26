@@ -1,0 +1,467 @@
+\chapter{System Design}
+
+\section{Overview}
+
+This chapter describes how the system is structured. It covers the overall architecture, the
+feature extraction pipeline, the classification process, and the ambiguity detection mechanism.
+It also explains the design decisions and the reasoning behind them.
+
+\section{System Architecture Overview}
+
+The system operates in two main phases: the training phase and the inference phase. The
+training phase is performed once to build and save the model, while the inference phase is
+executed for each new input provided by the user.
+
+Figure~\ref{fig:arch} illustrates the overall system architecture.
+
+%% ---- Figure 4.1: System Architecture ----
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={draw, rectangle, rounded corners=3pt, thick, align=center, minimum width=3.5cm, minimum height=1.0cm},
+  widebox/.style={draw, rectangle, rounded corners=3pt, thick, align=center, minimum width=5.5cm, minimum height=1.0cm},
+  arr/.style={-{Stealth[length=6pt]}, thick}
+]
+
+  % Nodes - Increased vertical and horizontal spacing to extend arrows
+  \node[box] (input) at (0,0) {\textbf{Input Text}};
+  
+  \node[box] (embed) at (0,-2.0) {\textbf{Sentence Embedding}\\[2pt](all-mpnet-base-v2)};
+  
+  \node[box] (tfidf) at (-4.2,-4.5) {\textbf{TF-IDF Features}\\[2pt](3000-dimensional)};
+  
+  \node[box] (knn)   at (4.2,-4.0) {\textbf{K-Nearest}\\[2pt]Neighbours (K=24)};
+  \node[box] (vr)    at (4.2,-6.0) {\textbf{Vietoris-Rips}\\[2pt]Persistence (H0, H1)};
+  \node[box] (pl)    at (4.2,-8.0) {\textbf{Persistence}\\[2pt]Landscape};
+  
+  \node[widebox] (fusion) at (0,-10.5) {\textbf{Feature Fusion}\\[2pt]\textbf{(Embedding $|$ TF-IDF $|$ Topology)}};
+  
+  \node[box] (xgb) at (0,-12.5) {\textbf{XGBoost Classifiers}\\[2pt]\textbf{(One-vs-Rest)}};
+  
+  \node[box] (ambig) at (0,-14.5) {\textbf{Ambiguity Detection}\\[2pt]\textbf{(Loop Count + Confidence Gap)}};
+  
+  \node[box] (output) at (0,-16.5) {\textbf{Final Output}\\[2pt]\textbf{(POS / NEG / NEU / AMBIG)}};
+
+  % Arrows - Exact routing as per reference image
+  \draw[arr] (input) -- (embed);
+  
+  \draw[arr] (embed.west) -| (tfidf.north);
+  \draw[arr] (embed.east) -| (knn.north);
+  \draw[arr] (embed.south) -- (fusion.north);
+  
+  \draw[arr] (knn) -- (vr);
+  \draw[arr] (vr) -- (pl);
+  
+  % Routes into the sides of Fusion box
+  \draw[arr] (tfidf.south) |- (fusion.west);
+  \draw[arr] (pl.south)    |- (fusion.east);
+  
+  \draw[arr] (fusion) -- (xgb);
+  \draw[arr] (xgb) -- (ambig);
+  \draw[arr] (ambig) -- (output);
+
+\end{tikzpicture}
+\caption{System Architecture for Emotion Detection with Ambiguity Detection}
+\label{fig:arch}
+\end{figure}
+
+As shown in Figure~\ref{fig:arch}, the system processes the input text through three distinct
+parallel tracks after an initial embedding step. The dense embeddings, TF-IDF representations,
+and topological persistence landscapes are fused into a single comprehensive feature vector.
+This vector is then passed to the XGBoost classifiers and finally evaluated by the ambiguity
+detection layer to yield the final predicted label.
+
+\section{Feature Extraction Design}
+
+Three types of features are extracted for each input. Each type captures a different aspect of the
+text.
+
+\subsection{Semantic Embeddings}
+
+The input text is encoded using the \texttt{all-mpnet-base-v2} model from SentenceTransformers.
+This produces a 768-dimensional dense vector that captures semantic meaning rather than just
+word occurrences.
+
+This representation allows semantically similar sentences to be close in the vector space even
+if they use different words.
+
+\subsection{TF-IDF Features}
+
+TF-IDF (Term Frequency -- Inverse Document Frequency) captures the importance of individual
+words and phrases. It complements embeddings by focusing on surface-level textual features.
+
+A vocabulary of 3000 features (including unigrams and bigrams) is used. Stopwords are removed
+to focus on meaningful words.
+
+\subsection{Topological Features}
+
+Topological features are extracted using Topological Data Analysis (TDA). For each input:
+\begin{itemize}
+    \item The 24 nearest neighbours are retrieved from the embedding space
+    \item These points form a local point cloud
+    \item Vietoris-Rips persistent homology is computed (H0 and H1)
+\end{itemize}
+
+H0 captures connected components, while H1 captures loops (holes). A Persistence Landscape is
+derived to convert topology into a numerical feature vector.
+
+Additionally, the number of H1 loops is used directly for ambiguity detection.
+
+%% ---- Figure 4.2: Feature Extraction Pipeline ----
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={draw, rectangle, thick, align=center, minimum width=3.5cm, minimum height=1.5cm},
+  widebox/.style={draw, rectangle, rounded corners=5pt, thick, align=center, minimum width=10cm, minimum height=0.8cm, fill=gray!10},
+  arr/.style={-{Stealth[length=5pt]}, thick}
+]
+
+  \node[widebox] (raw) at (0,0) {Raw Input Text};
+
+  \node[box] (st)    at (-3.8,-3.2) {SentenceTransformer\\[2pt](768-dimensional)};
+  \node[box] (tfidf) at (0,-3.2)    {TF-IDF Vectorizer\\[2pt](3000-dimensional)};
+  \node[box] (topo)  at (3.8,-3.2)  {Local VR Topology\\[2pt](30-dimensional\\Landscape)};
+
+  \node[widebox] (concat) at (0,-6.4) {Concatenated Feature Vector (3798 dimensions)};
+
+  \draw[arr] (raw.south -| st.north) -- (st.north);
+  \draw[arr] (raw.south) -- (tfidf.north);
+  \draw[arr] (raw.south -| topo.north) -- (topo.north);
+  
+  \draw[arr] (st.south) -- (concat.north -| st.south);
+  \draw[arr] (tfidf.south) -- (concat.north);
+  \draw[arr] (topo.south) -- (concat.north -| topo.south);
+
+\end{tikzpicture}
+\caption{Feature Extraction Pipeline}
+\label{fig:feat}
+\end{figure}
+
+Figure~\ref{fig:feat} provides a detailed view of the feature extraction pipeline. The raw text
+is simultaneously processed by the embedding model to capture semantic meaning, the TF-IDF
+vectorizer to capture keyword occurrences, and the topological data analysis module to capture
+geometric complexity. These three distinct feature sets are concatenated into a unified
+3798-dimensional vector utilized by the downstream classifier.
+
+\section{Design Justification}
+
+\subsection{Why Topology Instead of Only Confidence}
+
+Classifier confidence alone is not reliable for detecting ambiguity. A model may produce
+high confidence even for unclear inputs.
+
+Topological features provide a geometric perspective. If neighbouring points belong to different
+emotion clusters, the structure becomes complex (more loops), indicating ambiguity.
+
+\subsection{Why 24 Nearest Neighbours}
+
+The number of neighbours was chosen empirically:
+\begin{itemize}
+    \item Too few neighbours $\rightarrow$ insufficient structure
+    \item Too many neighbours $\rightarrow$ loss of locality
+\end{itemize}
+A value of 24 provides stable and meaningful topological representations.
+
+\subsection{Why SMOTE Was Not Used}
+
+SMOTE generates synthetic samples by interpolation. This alters the geometry of the data.
+Since TDA depends on the real geometric structure, adding synthetic points would distort
+topological features and reduce reliability.
+
+Instead, class imbalance is handled through threshold tuning.
+
+\section{Classification Design}
+
+Three binary XGBoost classifiers are trained using a one-vs-rest approach:
+\begin{itemize}
+    \item Positive classifier
+    \item Negative classifier
+    \item Neutral classifier
+\end{itemize}
+
+Each classifier outputs a probability score. The highest probability determines the predicted
+class, subject to ambiguity checks.
+
+XGBoost is chosen because:
+\begin{itemize}
+    \item It handles mixed feature types well
+    \item It is robust to feature scaling differences
+    \item It performs efficiently on structured data
+\end{itemize}
+
+\section{Ambiguity Detection Design}
+
+Ambiguity detection is based on:
+\begin{itemize}
+    \item Loop count (topological complexity)
+    \item Confidence gap (difference between top two probabilities)
+\end{itemize}
+
+The decision rules are:
+\begin{enumerate}
+    \item Loop count $\geq 14 \Rightarrow$ Ambiguous
+    \item Loop count $\geq 10$ and confidence gap $< 0.30 \Rightarrow$ Ambiguous
+    \item Confidence gap $< 0.10 \Rightarrow$ Ambiguous
+    \item Otherwise $\Rightarrow$ Predicted class
+\end{enumerate}
+
+%% ---- Figure 4.3: Ambiguity Detection Flowchart ----
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  font=\small,
+  decision/.style={draw, diamond, thick, align=center, aspect=1.5, minimum width=2.5cm},
+  block/.style={draw, rectangle, thick, align=center, minimum width=3cm, minimum height=0.8cm},
+  start/.style={draw, rectangle, thick, align=center, rounded corners=10pt, minimum width=3cm, minimum height=0.6cm},
+  arr/.style={-{Stealth[length=5pt]}, thick}
+]
+
+  \node[start] (s) at (0,0) {Start Ambiguity Check};
+  
+  \node[decision] (d1) at (0,-2.5) {Loops $\geq 14$?};
+  \node[block] (r1) at (5,-2.5) {Return AMBIGUOUS};
+  
+  \node[decision] (d2) at (0,-6) {Loops\\$\geq 10$ AND\\Gap $< 0.30$?};
+  \node[block] (r2) at (5,-6) {Return AMBIGUOUS};
+  
+  \node[decision] (d3) at (0,-9.5) {Gap $< 0.10$?};
+  \node[block] (r3) at (5,-9.5) {Return AMBIGUOUS};
+  
+  \node[block] (r4) at (0,-12.5) {Return Highest\\Probability Class};
+
+  \draw[arr] (s) -- (d1);
+  
+  \draw[arr] (d1) -- node[above=5pt, font=\scriptsize\bfseries, pos=0.4]{Yes} (r1);
+  \draw[arr] (d1) -- node[left=5pt, font=\scriptsize\bfseries]{No} (d2);
+  
+  \draw[arr] (d2) -- node[above=5pt, font=\scriptsize\bfseries, pos=0.4]{Yes} (r2);
+  \draw[arr] (d2) -- node[left=5pt, font=\scriptsize\bfseries]{No} (d3);
+  
+  \draw[arr] (d3) -- node[above=5pt, font=\scriptsize\bfseries, pos=0.4]{Yes} (r3);
+  \draw[arr] (d3) -- node[left=5pt, font=\scriptsize\bfseries]{No} (r4);
+
+\end{tikzpicture}
+\caption{Ambiguity Detection Activity Flowchart}
+\label{fig:ambig}
+\end{figure}
+
+As depicted in Figure~\ref{fig:ambig}, the ambiguity detection process follows a strict
+sequential decision tree. It first checks for extreme geometric complexity via the loop count
+before evaluating moderate complexity combined with the classifier's internal confidence gap.
+If none of the ambiguity conditions are triggered, the system defaults to outputting the class
+with the highest probability.
+
+\section{Data Flow Modeling}
+
+To visualize how data moves through the system, we employ Data Flow Diagrams (DFD) at
+multiple levels. This approach allows for both a high-level overview of system interactions and
+a detailed view of internal data transformations.
+
+\subsection{Level 0: Context Diagram}
+
+The Context Diagram (Level 0 DFD) represents the entire system as a single process and
+illustrates its relationship with external entities. In this project, the primary external entity is
+the User.
+
+%% ---- Figure 4.4: Level 0 Context Diagram ----
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={draw, rectangle, rounded corners=5pt, thick, align=center,
+              minimum width=3.2cm, minimum height=1.6cm, fill=gray!5},
+  circ/.style={draw, circle, thick, align=center, minimum size=3.8cm},
+  arr/.style={-{Stealth[length=6pt]}, thick}
+]
+
+% Increased horizontal distance to extend arrows
+\node[box] (user) at (0,0) {%
+  \textbf{User / External}\\[2pt]
+  \textbf{Application}
+};
+
+\node[circ] (sys) at (8.5,0) {%
+  \textbf{0.}\\[4pt]
+  \textbf{Emotion Detection}\\[2pt]
+  \textbf{\& Ambiguity}\\[2pt]
+  \textbf{Analysis System}
+};
+
+% Top arrow: User -> System (tilted)
+% Using yshift to move label further from the line
+\draw[arr] (user.30) -- node[above=6pt, sloped, pos=0.5]{\small Raw Text Input} (sys.155);
+
+% Bottom arrow: System -> User (tilted)
+% Using yshift to move label further from the line
+\draw[arr] (sys.205) -- node[below=6pt, sloped, align=center, pos=0.5]{%
+  \small Emotion Label (POS/NEG/NEU)\\[1pt]
+  \small or AMBIGUOUS Result} (user.330);
+
+\end{tikzpicture}
+\caption{Level 0 Context Diagram}
+\label{fig:dfd0}
+\end{figure}
+
+As shown in Figure~\ref{fig:dfd0}, the system acts as a black box that accepts raw textual data
+and returns a categorized emotional state. The inclusion of an ``Ambiguous'' label differentiates
+this system from standard classifiers, as it explicitly communicates uncertainty back to the user.
+
+\subsection{Level 1: Detailed Data Flow}
+
+The Level 1 DFD breaks down the system into its primary functional processes and shows the
+internal data stores accessed during the inference phase.
+
+%% ---- Figure 4.5: Level 1 DFD ----
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={draw, rectangle, very thick, align=center,
+              minimum width=2.8cm, minimum height=1.6cm},
+  datastore/.style={draw, rectangle, thick, align=center,
+                    minimum width=2.8cm, minimum height=1.2cm},
+  proc/.style={draw, circle, very thick, align=center, minimum size=3.0cm},
+  arr/.style={-{Stealth[length=6pt, width=4pt]}, thick},
+  lbl/.style={font=\scriptsize, midway}
+]
+
+% Nodes - Increased spacing to extend arrows
+\node[box] (user)   at (0, 0)    {\textbf{User}\\\textbf{Input}};
+\node[proc]         (feat) at (5, 0)    {\textbf{1.0}\\[4pt]\textbf{Feature}\\[2pt]\textbf{Extraction}};
+\node[proc]         (emot) at (10.5, 0)  {\textbf{2.0}\\[4pt]\textbf{Emotion}\\[2pt]\textbf{Prediction}};
+\node[datastore]    (model) at (5,-4.5) {\textbf{D1: Saved Model}\\[2pt](.joblib)};
+\node[proc]         (ambi) at (10.5,-4.5) {\textbf{3.0}\\[4pt]\textbf{Ambiguity}\\[2pt]\textbf{Analysis}};
+\node[box]          (out)  at (0,-4.5)  {\textbf{Final Output}\\\textbf{Label}};
+
+% Arrows with adjusted label positions to avoid intersection
+\draw[arr] (user.east)  -- node[lbl, above=3pt]{Text} (feat.west);
+\draw[arr] (feat.east)  -- node[lbl, above=3pt]{Combined Features} (emot.west);
+\draw[arr] (emot.south) -- node[lbl, right=3pt, align=left]{Probabilities\\\& Loop Counts} (ambi.north);
+\draw[arr] (model.north) -- node[lbl, right=3pt, align=left]{Trained\\Params} (feat.south);
+\draw[arr] (model.east)  -- node[lbl, above=3pt, align=center]{Classifiers\\Reference Clusters} (ambi.west);
+
+% Final label path adjusted
+\draw[arr] (ambi.south) -- ++(0,-0.8) -| node[lbl, below=3pt, pos=0.25, align=center]{Final Label} (out.south);
+
+\end{tikzpicture}
+\caption{Level 1 Data Flow Diagram (DFD)}
+\label{fig:dfd1}
+\end{figure}
+
+Figure~\ref{fig:dfd1} details the internal flow of data. The process begins with
+\textbf{Feature Extraction (1.0)}, which transforms raw text into a multi-modal feature vector
+using parameters stored in \textbf{D1}. These features are consumed by \textbf{Emotion
+Prediction (2.0)}, where XGBoost models generate class probabilities. Finally,
+\textbf{Ambiguity Analysis (3.0)} uses both these probabilities and the topological loop counts
+to decide whether to output a standard emotion label or an ambiguity flag.
+
+\subsection{Level 2: Ambiguity Analysis Sub-Flow}
+
+To further illustrate the core innovation of this project, we break down Process 3.0 into its
+logical components. This Level 2 DFD shows how topological signals and classifier
+probabilities are integrated to detect ambiguous inputs.
+
+%% ---- Figure 4.6: Level 2 DFD ----
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={
+    draw, rectangle, very thick, align=center,
+    minimum width=2.8cm, minimum height=1.1cm
+  },
+  proc/.style={
+    draw, circle, very thick, align=center,
+    minimum size=3.0cm, text width=2.2cm
+  },
+  arr/.style={-{Stealth[length=6pt, width=4pt]}, thick}
+]
+
+%-----------------------------------------------
+%  NODES  –  compact layout matching reference
+%-----------------------------------------------
+
+% Left input boxes
+\node[box] (loop) at (0,  2.2) {Loop Counts ($H_1$)};
+\node[box] (prob) at (0, -2.2) {Class Probabilities};
+
+% Middle process circles
+\node[proc] (ext)  at (5.5,  2.2) {%
+  \textbf{3.1}\\[3pt]
+  \textbf{Extreme}\\
+  \textbf{Topology}\\
+  \textbf{Check}
+};
+\node[proc] (conf) at (5.5, -2.2) {%
+  \textbf{3.2}\\[3pt]
+  \textbf{Confidence}\\
+  \textbf{Gap}\\
+  \textbf{Evaluation}
+};
+
+% 3.3 centred between 3.1 and 3.2
+\node[proc] (asgn) at (10, 0) {%
+  \textbf{3.3}\\[3pt]
+  \textbf{Final Label}\\
+  \textbf{Assignment}
+};
+
+% Result box
+\node[box] (res) at (14, 0) {\textbf{Result}};
+
+%-----------------------------------------------
+%  ARROWS  –  labels well clear of every line
+%-----------------------------------------------
+
+% 1. Loop Counts --> 3.1 (Topology Counts) — straight horizontal
+\draw[arr] (loop.east) -- (ext.west);
+\node[font=\scriptsize, above=10pt]
+  at ($(loop.east)!0.5!(ext.west)$) {Topology Counts};
+
+% 2. Loop Counts --> 3.2 (Topology Counts) — vertical branch
+%    Route: right from loop.east, drop down, then into conf at upper-left (150°)
+%    This keeps it fully separate from the Probabilities arrow entering conf.west
+\coordinate (Av) at ($(loop.east) + (0.8, 0)$);
+\coordinate (Bv) at (Av |- conf.150);
+
+\draw[arr] (loop.east) -- (Av) -- (Bv) -- (conf.150);
+
+% Label to the LEFT of the vertical segment — large offset
+\node[font=\scriptsize, left=10pt]
+  at ($(Av)!0.5!(Bv)$) {Topology Counts};
+
+% 3. Class Probabilities --> 3.2 (Probabilities) — straight horizontal
+\draw[arr] (prob.east) -- (conf.west);
+\node[font=\scriptsize, below=10pt]
+  at ($(prob.east)!0.5!(conf.west)$) {Probabilities};
+
+% 4. 3.1 --> 3.3 (Is Extreme?) — diagonal
+\draw[arr] (ext.east) -- (asgn.north west);
+\node[font=\scriptsize, above=12pt]
+  at ($(ext.east)!0.5!(asgn.north west)$) {Is Extreme?};
+
+% 5. 3.2 --> 3.3 (Confidence Gap) — diagonal
+\draw[arr] (conf.east) -- (asgn.south west);
+\node[font=\scriptsize, below=12pt]
+  at ($(conf.east)!0.6!(asgn.south west)$) {Confidence Gap};
+
+% 6. 3.3 --> Result — straight horizontal
+\draw[arr] (asgn.east) -- (res.west);
+
+\end{tikzpicture}
+\caption{Level 2 DFD: Process 3.0 (Ambiguity Analysis)}
+\label{fig:dfd2}
+\end{figure}
+
+The Level 2 DFD (Figure~\ref{fig:dfd2}) illustrates the internal decision logic of the ambiguity
+detection system. It shows how H1 loop counts flow into two parallel processes: Process 3.1
+handles extreme cases, while Process 3.2 evaluates the confidence gap between the primary and
+secondary emotion classes. The outputs are reconciled in Process 3.3 to assign the final output
+label.
+
+\section{Training vs Inference}
+
+Topology is computed during inference rather than precomputed. This ensures that the ambiguity
+signal reflects the real structure of the training data relative to each input.

@@ -111,6 +111,28 @@ of inputs wrong. When a system can instead say ``I am not confident about this o
 genuinely unclear inputs, the 0.59 becomes more informative: it applies only to the cases where
 the system chose to commit to a label.
 
+\section{Ablation Study}
+
+To verify the contribution of each component to the final system, an ablation study was performed. \textbf{Table~\ref{tab:ablation}} compares the performance of the system using different feature combinations.
+
+\begin{table}[H]
+\centering
+\caption{Ablation Study of Feature Combinations}
+\label{tab:ablation}
+\begin{tabular}{|l|c|c|l|}
+\hline
+\textbf{Feature Combination} & \textbf{Accuracy} & \textbf{Macro F1} & \textbf{Ambiguity Detection} \\ \hline
+Embeddings only              & $\sim$0.57        & $\sim$0.52        & No \\ \hline
+Embeddings + TF-IDF          & $\sim$0.58        & $\sim$0.54        & No \\ \hline
+Embeddings + TF-IDF + TDA    & 0.59              & 0.56              & Yes (Proposed) \\ \hline
+Confidence gap only (no TDA) & 0.59              & 0.56              & Partial \\ \hline
+\end{tabular}
+\end{table}
+
+To isolate the contribution of topological features, consider inputs where the confidence gap alone would not trigger ambiguity detection (gap $>$ 0.10) but the loop count exceeds the extreme threshold ($\geq$ 14). In such cases, purely confidence-based selective prediction would return a committed label, while the proposed system correctly identifies geometric ambiguity.
+
+Specifically, the sentence ``i dont know how i feel'' produces a confidence gap of 0.15. Since this is above the very low confidence threshold (0.10), a system relying solely on probabilistic signals would force a classification (in this case, \textsc{negative}). However, because the loop count is 15 (exceeding the extreme threshold of 14), the proposed system correctly identifies the input as \textsc{ambiguous}. This demonstrates that topological and probabilistic signals are complementary rather than redundant, as TDA captures structural complexity that is not always reflected in the classifier's output probabilities.
+
 \section{Ambiguity Detection Results}
 
 \textbf{Table~\ref{tab:ambigresults}} shows the behavior of the ambiguity detection on a set of test

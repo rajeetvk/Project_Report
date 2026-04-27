@@ -40,7 +40,7 @@ connection after the first download.
 The dataset has 43,410 training samples and 5,427 test samples. Each sample is a Reddit
 comment with one or more labels from 28 emotion categories.
 
-The 28 emotion categories are mapped to three classes as shown in Table~\ref{tab:label_map}.
+The 28 emotion categories are mapped to three classes as shown in \textbf{Table~\ref{tab:label_map}}.
 
 \begin{table}[H]
 \centering
@@ -57,7 +57,7 @@ Neutral  & 27 & neutral \\
 \end{tabular}
 \end{table}
 
-As shown in Table~\ref{tab:label_map}, the original GoEmotions labels are mapped to three
+As shown in \textbf{Table~\ref{tab:label_map}}, the original GoEmotions labels are mapped to three
 broad categories to simplify the classification task while preserving emotional valence.
 
 Each sample can belong to more than one class because the original GoEmotions labels are
@@ -95,7 +95,7 @@ The only preprocessing that was applied was the standard stopword removal inside
 vectorizer, which is appropriate because TF-IDF is a count-based model where common function
 words genuinely do not add information.
 
-Table~\ref{tab:text_proc} shows the comparison between traditional NLP preprocessing and the
+\textbf{Table~\ref{tab:text_proc}} shows the comparison between traditional NLP preprocessing and the
 approach used in this project.
 
 \begin{table}[H]
@@ -115,7 +115,7 @@ Dense embeddings & Used as primary representation \\
 \end{tabular}
 \end{table}
 
-As shown in Table~\ref{tab:text_proc}, the design choice to avoid traditional preprocessing
+As shown in \textbf{Table~\ref{tab:text_proc}}, the design choice to avoid traditional preprocessing
 ensures that the semantic richness and geometric structure of the embeddings are preserved for
 topological analysis.
 
@@ -231,7 +231,7 @@ Final Result : AMBIGUOUS
 
 \section{Example Outputs}
 
-Table~\ref{tab:ex_outputs} shows how the system responds to different types of inputs and which
+\textbf{Table~\ref{tab:ex_outputs}} shows how the system responds to different types of inputs and which
 rule was triggered.
 
 \begin{table}[H]
@@ -253,7 +253,7 @@ i dont know how i feel       & 15 & 0.15 & \textsc{ambiguous} \\
 \end{tabular}
 \end{table}
 
-As shown in Table~\ref{tab:ex_outputs}, the system's decision logic correctly differentiates
+As shown in \textbf{Table~\ref{tab:ex_outputs}}, the system's decision logic correctly differentiates
 between clear emotional expressions and those requiring an ambiguity flag based on geometric
 and probabilistic signals.
 
@@ -267,20 +267,59 @@ social complexity of this phrase. This limitation is discussed further in Chapte
 Two visualization scripts are provided. These load the saved model and produce three types of
 plots for any given input:
 
-The first is a \textbf{point cloud visualization}. It shows the 24 nearest neighbours of the
+\textbf{Point Cloud Visualization:} It shows the 24 nearest neighbours of the
 input projected onto two dimensions using PCA. Points are colored by their true class. If the
 input's neighbours come from multiple different classes, the point cloud will be scattered and
 mixed-color.
 
-The second is a \textbf{persistence diagram}. This shows all H0 and H1 features plotted as
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{point_cloud_general.png}
+\caption{Point Cloud Visualization of 24 Nearest Neighbours (PCA Projection)}
+\label{fig:pointcloud}
+\end{figure}
+
+As shown in \textbf{Figure~\ref{fig:pointcloud}}, the local neighbourhood of the input is
+projected onto two principal components. Each point represents one of the 24 nearest neighbours,
+colored by its true emotion class. A mixed-color, scattered distribution indicates that the input
+sits near the boundary of multiple emotion clusters, which correlates with higher topological
+complexity.
+
+\textbf{Persistence Diagram:} This shows all H0 and H1 features plotted as
 points with their birth time on the x-axis and death time on the y-axis. Points far from the
 diagonal correspond to long-lived topological features, which indicate genuine structure. H1
 points (loops) that are long-lived indicate that the neighbourhood has genuine topological
 complexity.
 
-The third is a \textbf{persistence landscape plot}. This is the smoothed, vectorized summary of
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{persistence_diagram.png}
+\caption{Persistence Diagram Showing H0 and H1 Topological Features}
+\label{fig:persdiag}
+\end{figure}
+
+As shown in \textbf{Figure~\ref{fig:persdiag}}, each point in the persistence diagram
+represents a topological feature. H0 features (connected components) appear as one group, while
+H1 features (loops) appear as another. Features far from the diagonal have longer lifespans,
+indicating genuine topological structure rather than noise. The number of H1 points directly
+corresponds to the loop count used in the ambiguity detection rules.
+
+\textbf{Persistence Landscape Plot:} This is the smoothed, vectorized summary of
 the persistence diagram. It shows the envelope of all the persistence intervals, summarized into
 a set of curves.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{persistence_landscape.png}
+\caption{Persistence Landscape Representation}
+\label{fig:landscape}
+\end{figure}
+
+As shown in \textbf{Figure~\ref{fig:landscape}}, the persistence landscape converts the
+persistence diagram into a functional representation suitable for machine learning. The peaks
+in the landscape correspond to the most prominent topological features. This vectorized
+representation is concatenated with the embedding and TF-IDF features to form the final
+3798-dimensional feature vector used by the classifier.
 
 These visualizations were used during development to understand why certain inputs were being
 flagged as Ambiguous and to calibrate the loop count thresholds.

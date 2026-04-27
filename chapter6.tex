@@ -23,7 +23,7 @@ The evaluation was performed using the following configuration:
 
 \section{Classification Performance}
 
-Table~\ref{tab:classperf} shows the classification results on the test set. These are the actual
+\textbf{Table~\ref{tab:classperf}} shows the classification results on the test set. These are the actual
 outputs from the trained model, and the numbers have not been adjusted.
 
 \begin{table}[H]
@@ -45,7 +45,7 @@ Weighted Avg      & 0.72 & 0.59 & 0.60 & 5427 \\
 \end{tabular}
 \end{table}
 
-As shown in Table~\ref{tab:classperf}, the system achieved an accuracy of 0.59 and a weighted
+As shown in \textbf{Table~\ref{tab:classperf}}, the system achieved an accuracy of 0.59 and a weighted
 F1-score of 0.60 on the 5,427 test samples, effectively capturing emotional patterns despite the
 difficulty of the GoEmotions corpus.
 
@@ -93,7 +93,7 @@ the system chose to commit to a label.
 
 \section{Ambiguity Detection Results}
 
-Table~\ref{tab:ambigresults} shows the behavior of the ambiguity detection on a set of test
+\textbf{Table~\ref{tab:ambigresults}} shows the behavior of the ambiguity detection on a set of test
 inputs. These examples were selected to illustrate different cases: clear inputs, borderline
 inputs, and genuinely ambiguous ones.
 
@@ -117,7 +117,7 @@ you are silly            & 4  & 0.21 & none                          & \textsc{n
 \end{tabular}
 \end{table}
 
-As demonstrated in Table~\ref{tab:ambigresults}, the results match expectations well. Clear
+As demonstrated in \textbf{Table~\ref{tab:ambigresults}}, the results match expectations well. Clear
 emotional sentences are classified correctly. Sentences with genuinely mixed or unclear meaning
 are flagged as Ambiguous.
 
@@ -198,7 +198,7 @@ you are silly          & \textsc{neutral}   & \textsc{neutral}   & Pass \\
 \end{tabular}
 \end{table}
 
-As shown in Table~\ref{tab:blackbox}, all test cases passed. It is noted that ``i am fine''
+As shown in \textbf{Table~\ref{tab:blackbox}}, all test cases passed. It is noted that ``i am fine''
 returned \textsc{positive} rather than \textsc{ambiguous}. This is a known behavior discussed
 in the limitations section. From a black box perspective, the system is internally consistent:
 the confidence gap and loop count for this input are both below the thresholds, so the system
@@ -298,6 +298,17 @@ particularly when used sarcastically. However, the system can only detect ambigu
 geometrically visible in the embedding space. Social subtlety that is not captured in the
 training distribution is a known limitation.
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{case1_clear.png}
+\caption{Visualization for Case Study 1: ``I Am Fine'' — Clear Topology}
+\label{fig:case1}
+\end{figure}
+
+As shown in \textbf{Figure~\ref{fig:case1}}, the point cloud for ``I am fine'' forms a
+tightly clustered neighbourhood dominated by a single class. The persistence diagram shows
+very few H1 features, confirming clean topology and explaining why no ambiguity rule triggers.
+
 \subsection{Case Study 2: I Do Not Know How I Feel}
 
 This case study examines why ``i dont know how i feel'' correctly returns \textsc{ambiguous}.
@@ -326,9 +337,20 @@ emotion classes, and the topology correctly captures this.
 This is exactly the kind of case the system was designed to handle. The sentence is inherently
 ambiguous, and the topological analysis detects this in a principled way.
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{case2_ambiguous.png}
+\caption{Visualization for Case Study 2: ``I Dont Know How I Feel'' — Complex Topology}
+\label{fig:case2}
+\end{figure}
+
+As shown in \textbf{Figure~\ref{fig:case2}}, the point cloud for this input is scattered
+across multiple emotion classes. The persistence diagram reveals numerous long-lived H1 loops,
+confirming the geometric complexity that triggers the extreme topology rule.
+
 \section{Timeline of Project Development}
 
-The project was developed over a period of approximately four months. Table~\ref{tab:timeline}
+The project was developed over a period of approximately four months. \textbf{Table~\ref{tab:timeline}}
 summarizes the major milestones.
 
 \begin{table}[H]
@@ -359,7 +381,7 @@ Added visualization scripts. Resolved GPU/CPU compatibility issues. Wrote report
 \end{tabular}
 \end{table}
 
-As detailed in Table~\ref{tab:timeline}, the project progressed steadily from the initial
+As detailed in \textbf{Table~\ref{tab:timeline}}, the project progressed steadily from the initial
 literature review phase through to full pipeline implementation, threshold tuning, and formal
 evaluation over the span of four months.
 
@@ -382,7 +404,7 @@ noise.
 
 \section{Threshold Sensitivity}
 
-Table~\ref{tab:thresh} shows how the ambiguity rate changes as the loop thresholds are varied
+\textbf{Table~\ref{tab:thresh}} shows how the ambiguity rate changes as the loop thresholds are varied
 on the test examples.
 
 \begin{table}[H]
@@ -400,7 +422,7 @@ on the test examples.
 \end{tabular}
 \end{table}
 
-As indicated in Table~\ref{tab:thresh}, the current thresholds of 14 and 10 were chosen because
+As indicated in \textbf{Table~\ref{tab:thresh}}, the current thresholds of 14 and 10 were chosen because
 they give a meaningful ambiguity rate while not being so aggressive that most inputs are flagged.
 Applications that require very confident outputs could raise these thresholds. Applications that
 need to flag any uncertain input could lower them.

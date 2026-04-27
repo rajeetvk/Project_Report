@@ -12,20 +12,20 @@ The system operates in two main phases: the training phase and the inference pha
 training phase is performed once to build and save the model, while the inference phase is
 executed for each new input provided by the user.
 
-Figure~\ref{fig:arch} illustrates the overall system architecture.
+\textbf{Figure~\ref{fig:arch}} illustrates the overall system architecture.
 
 %% ---- Figure 4.1: System Architecture ----
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[
   font=\small,
-  box/.style={draw, rectangle, rounded corners=3pt, thick, align=center, minimum width=3.5cm, minimum height=1.0cm},
-  widebox/.style={draw, rectangle, rounded corners=3pt, thick, align=center, minimum width=5.5cm, minimum height=1.0cm},
+  box/.style={draw, rectangle, rounded corners=3pt, thick, align=center, minimum width=3.5cm, minimum height=1.0cm, fill=blue!8},
+  widebox/.style={draw, rectangle, rounded corners=3pt, thick, align=center, minimum width=5.5cm, minimum height=1.0cm, fill=teal!10},
   arr/.style={-{Stealth[length=6pt]}, thick}
 ]
 
   % Nodes - Increased vertical and horizontal spacing to extend arrows
-  \node[box] (input) at (0,0) {\textbf{Input Text}};
+  \node[box, fill=green!12] (input) at (0,0) {\textbf{Input Text}};
   
   \node[box] (embed) at (0,-2.0) {\textbf{Sentence Embedding}\\[2pt](all-mpnet-base-v2)};
   
@@ -37,11 +37,11 @@ Figure~\ref{fig:arch} illustrates the overall system architecture.
   
   \node[widebox] (fusion) at (0,-10.5) {\textbf{Feature Fusion}\\[2pt]\textbf{(Embedding $|$ TF-IDF $|$ Topology)}};
   
-  \node[box] (xgb) at (0,-12.5) {\textbf{XGBoost Classifiers}\\[2pt]\textbf{(One-vs-Rest)}};
+  \node[box, fill=purple!10] (xgb) at (0,-12.5) {\textbf{XGBoost Classifiers}\\[2pt]\textbf{(One-vs-Rest)}};
   
-  \node[box] (ambig) at (0,-14.5) {\textbf{Ambiguity Detection}\\[2pt]\textbf{(Loop Count + Confidence Gap)}};
+  \node[box, fill=orange!12] (ambig) at (0,-14.5) {\textbf{Ambiguity Detection}\\[2pt]\textbf{(Loop Count + Confidence Gap)}};
   
-  \node[box] (output) at (0,-16.5) {\textbf{Final Output}\\[2pt]\textbf{(POS / NEG / NEU / AMBIG)}};
+  \node[box, fill=red!8] (output) at (0,-16.5) {\textbf{Final Output}\\[2pt]\textbf{(POS / NEG / NEU / AMBIG)}};
 
   % Arrows - Exact routing as per reference image
   \draw[arr] (input) -- (embed);
@@ -66,7 +66,7 @@ Figure~\ref{fig:arch} illustrates the overall system architecture.
 \label{fig:arch}
 \end{figure}
 
-As shown in Figure~\ref{fig:arch}, the system processes the input text through three distinct
+As shown in \textbf{Figure~\ref{fig:arch}}, the system processes the input text through three distinct
 parallel tracks after an initial embedding step. The dense embeddings, TF-IDF representations,
 and topological persistence landscapes are fused into a single comprehensive feature vector.
 This vector is then passed to the XGBoost classifiers and finally evaluated by the ambiguity
@@ -113,8 +113,8 @@ Additionally, the number of H1 loops is used directly for ambiguity detection.
 \centering
 \begin{tikzpicture}[
   font=\small,
-  box/.style={draw, rectangle, thick, align=center, minimum width=3.5cm, minimum height=1.5cm},
-  widebox/.style={draw, rectangle, rounded corners=5pt, thick, align=center, minimum width=10cm, minimum height=0.8cm, fill=gray!10},
+  box/.style={draw, rectangle, thick, align=center, minimum width=3.5cm, minimum height=1.5cm, fill=blue!10},
+  widebox/.style={draw, rectangle, rounded corners=5pt, thick, align=center, minimum width=10cm, minimum height=0.8cm, fill=teal!12},
   arr/.style={-{Stealth[length=5pt]}, thick}
 ]
 
@@ -139,7 +139,7 @@ Additionally, the number of H1 loops is used directly for ambiguity detection.
 \label{fig:feat}
 \end{figure}
 
-Figure~\ref{fig:feat} provides a detailed view of the feature extraction pipeline. The raw text
+\textbf{Figure~\ref{fig:feat}} provides a detailed view of the feature extraction pipeline. The raw text
 is simultaneously processed by the embedding model to capture semantic meaning, the TF-IDF
 vectorizer to capture keyword occurrences, and the topological data analysis module to capture
 geometric complexity. These three distinct feature sets are concatenated into a unified
@@ -212,9 +212,9 @@ The decision rules are:
 \centering
 \begin{tikzpicture}[
   font=\small,
-  decision/.style={draw, diamond, thick, align=center, aspect=1.5, minimum width=2.5cm},
-  block/.style={draw, rectangle, thick, align=center, minimum width=3cm, minimum height=0.8cm},
-  start/.style={draw, rectangle, thick, align=center, rounded corners=10pt, minimum width=3cm, minimum height=0.6cm},
+  decision/.style={draw, diamond, thick, align=center, aspect=1.5, minimum width=2.5cm, fill=yellow!15},
+  block/.style={draw, rectangle, thick, align=center, minimum width=3cm, minimum height=0.8cm, fill=red!10},
+  start/.style={draw, rectangle, thick, align=center, rounded corners=10pt, minimum width=3cm, minimum height=0.6cm, fill=green!12},
   arr/.style={-{Stealth[length=5pt]}, thick}
 ]
 
@@ -229,7 +229,7 @@ The decision rules are:
   \node[decision] (d3) at (0,-9.5) {Gap $< 0.10$?};
   \node[block] (r3) at (5,-9.5) {Return AMBIGUOUS};
   
-  \node[block] (r4) at (0,-12.5) {Return Highest\\Probability Class};
+  \node[block, fill=green!12] (r4) at (0,-12.5) {Return Highest\\Probability Class};
 
   \draw[arr] (s) -- (d1);
   
@@ -247,7 +247,7 @@ The decision rules are:
 \label{fig:ambig}
 \end{figure}
 
-As depicted in Figure~\ref{fig:ambig}, the ambiguity detection process follows a strict
+As depicted in \textbf{Figure~\ref{fig:ambig}}, the ambiguity detection process follows a strict
 sequential decision tree. It first checks for extreme geometric complexity via the loop count
 before evaluating moderate complexity combined with the classifier's internal confidence gap.
 If none of the ambiguity conditions are triggered, the system defaults to outputting the class
@@ -271,8 +271,8 @@ the User.
 \begin{tikzpicture}[
   font=\small,
   box/.style={draw, rectangle, rounded corners=5pt, thick, align=center,
-              minimum width=3.2cm, minimum height=1.6cm, fill=gray!5},
-  circ/.style={draw, circle, thick, align=center, minimum size=3.8cm},
+              minimum width=3.2cm, minimum height=1.6cm, fill=green!10},
+  circ/.style={draw, circle, thick, align=center, minimum size=3.8cm, fill=blue!8},
   arr/.style={-{Stealth[length=6pt]}, thick}
 ]
 
@@ -304,7 +304,7 @@ the User.
 \label{fig:dfd0}
 \end{figure}
 
-As shown in Figure~\ref{fig:dfd0}, the system acts as a black box that accepts raw textual data
+As shown in \textbf{Figure~\ref{fig:dfd0}}, the system acts as a black box that accepts raw textual data
 and returns a categorized emotional state. The inclusion of an ``Ambiguous'' label differentiates
 this system from standard classifiers, as it explicitly communicates uncertainty back to the user.
 
@@ -319,10 +319,10 @@ internal data stores accessed during the inference phase.
 \begin{tikzpicture}[
   font=\small,
   box/.style={draw, rectangle, very thick, align=center,
-              minimum width=2.8cm, minimum height=1.6cm},
+              minimum width=2.8cm, minimum height=1.6cm, fill=green!10},
   datastore/.style={draw, rectangle, thick, align=center,
-                    minimum width=2.8cm, minimum height=1.2cm},
-  proc/.style={draw, circle, very thick, align=center, minimum size=3.0cm},
+                    minimum width=2.8cm, minimum height=1.2cm, fill=purple!10},
+  proc/.style={draw, circle, very thick, align=center, minimum size=3.0cm, fill=blue!8},
   arr/.style={-{Stealth[length=6pt, width=4pt]}, thick},
   lbl/.style={font=\scriptsize, midway}
 ]
@@ -333,7 +333,7 @@ internal data stores accessed during the inference phase.
 \node[proc]         (emot) at (10.5, 0)  {\textbf{2.0}\\[4pt]\textbf{Emotion}\\[2pt]\textbf{Prediction}};
 \node[datastore]    (model) at (5,-4.5) {\textbf{D1: Saved Model}\\[2pt](.joblib)};
 \node[proc]         (ambi) at (10.5,-4.5) {\textbf{3.0}\\[4pt]\textbf{Ambiguity}\\[2pt]\textbf{Analysis}};
-\node[box]          (out)  at (0,-4.5)  {\textbf{Final Output}\\\textbf{Label}};
+\node[box, fill=orange!12]  (out)  at (0,-4.5)  {\textbf{Final Output}\\\textbf{Label}};
 
 % Arrows with adjusted label positions to avoid intersection
 \draw[arr] (user.east)  -- node[lbl, above=3pt]{Text} (feat.west);
@@ -350,7 +350,7 @@ internal data stores accessed during the inference phase.
 \label{fig:dfd1}
 \end{figure}
 
-Figure~\ref{fig:dfd1} details the internal flow of data. The process begins with
+\textbf{Figure~\ref{fig:dfd1}} details the internal flow of data. The process begins with
 \textbf{Feature Extraction (1.0)}, which transforms raw text into a multi-modal feature vector
 using parameters stored in \textbf{D1}. These features are consumed by \textbf{Emotion
 Prediction (2.0)}, where XGBoost models generate class probabilities. Finally,
@@ -370,11 +370,11 @@ probabilities are integrated to detect ambiguous inputs.
   font=\small,
   box/.style={
     draw, rectangle, very thick, align=center,
-    minimum width=2.8cm, minimum height=1.1cm
+    minimum width=2.8cm, minimum height=1.1cm, fill=green!10
   },
   proc/.style={
     draw, circle, very thick, align=center,
-    minimum size=3.0cm, text width=2.2cm
+    minimum size=3.0cm, text width=2.2cm, fill=blue!8
   },
   arr/.style={-{Stealth[length=6pt, width=4pt]}, thick}
 ]
@@ -409,7 +409,7 @@ probabilities are integrated to detect ambiguous inputs.
 };
 
 % Result box
-\node[box] (res) at (14, 0) {\textbf{Result}};
+\node[box, fill=orange!12] (res) at (14, 0) {\textbf{Result}};
 
 %-----------------------------------------------
 %  ARROWS  –  labels well clear of every line
@@ -455,7 +455,7 @@ probabilities are integrated to detect ambiguous inputs.
 \label{fig:dfd2}
 \end{figure}
 
-The Level 2 DFD (Figure~\ref{fig:dfd2}) illustrates the internal decision logic of the ambiguity
+The Level 2 DFD (\textbf{Figure~\ref{fig:dfd2}}) illustrates the internal decision logic of the ambiguity
 detection system. It shows how H1 loop counts flow into two parallel processes: Process 3.1
 handles extreme cases, while Process 3.2 evaluates the confidence gap between the primary and
 secondary emotion classes. The outputs are reconciled in Process 3.3 to assign the final output

@@ -77,36 +77,76 @@ detection layer to yield the final predicted label.
 Three types of features are extracted for each input. Each type captures a different aspect of the
 text.
 
-\subsection{Semantic Embeddings}
+\subsection{Semantic Embedding}
 
-The input text is encoded using the \texttt{all-mpnet-base-v2} model from SentenceTransformers.
-This produces a 768-dimensional dense vector that captures semantic meaning rather than just
-word occurrences.
+Text inputs are converted into dense vector representations using a pretrained sentence
+embedding model. These embeddings capture semantic meaning in a high-dimensional space.
 
-This representation allows semantically similar sentences to be close in the vector space even
-if they use different words.
+To quantify similarity between embeddings, we use the Euclidean distance:
+\begin{equation}
+d(x_i, x_j) = \|x_i - x_j\|_2
+\end{equation}
 
-\subsection{TF-IDF Features}
+This distance metric is later used to construct topological structures over the embedding space.
 
-TF-IDF (Term Frequency -- Inverse Document Frequency) captures the importance of individual
-words and phrases. It complements embeddings by focusing on surface-level textual features.
+\subsection{TF-IDF Feature}
 
-A vocabulary of 3000 features (including unigrams and bigrams) is used. Stopwords are removed
-to focus on meaningful words.
+In addition to semantic embeddings, textual features are extracted using the Term
+Frequency--Inverse Document Frequency (TF-IDF) representation.
+
+\begin{equation}
+w(t, d) = tf(t, d) \cdot \log\left(\frac{N}{df(t)}\right)
+\end{equation}
+
+where $tf(t, d)$ is the term frequency of term $t$ in document $d$, $df(t)$ is the document
+frequency, and $N$ is the total number of documents.
+
+This representation captures the importance of words within the corpus.
 
 \subsection{Topological Features}
 
-Topological features are extracted using Topological Data Analysis (TDA). For each input:
-\begin{itemize}
-    \item The 24 nearest neighbours are retrieved from the embedding space
-    \item These points form a local point cloud
-    \item Vietoris-Rips persistent homology is computed (H0 and H1)
-\end{itemize}
+To capture the structural complexity of the embedding space, we employ techniques from
+Topological Data Analysis (TDA). This approach analyzes the shape of data by studying how
+points connect across multiple scales.
 
-H0 captures connected components, while H1 captures loops (holes). A Persistence Landscape is
-derived to convert topology into a numerical feature vector.
+\paragraph{Vietoris--Rips Complex.}
+A simplicial complex is constructed by connecting points whose pairwise distance is below a
+threshold $\epsilon$:
+\begin{equation}
+\text{Edge exists if } d(x_i, x_j) \leq \epsilon
+\end{equation}
 
-Additionally, the number of H1 loops is used directly for ambiguity detection.
+\paragraph{Persistent Homology.}
+Topological features such as connected components and loops are tracked across different
+scales. Each feature is characterized by its birth and death:
+\begin{equation}
+\text{Persistence} = d_{\text{death}} - d_{\text{birth}}
+\end{equation}
+
+Features with high persistence represent significant structure, while those with low persistence
+are considered noise.
+
+\paragraph{Loop Features ($H_1$).}
+In this work, we focus on one-dimensional homology ($H_1$), which corresponds to loops in the
+data:
+\begin{equation}
+H_1 = \text{Number of 1-dimensional holes (loops)}
+\end{equation}
+
+A higher number of loops indicates greater structural complexity in the embedding space.
+
+\paragraph{Persistence Landscape.}
+To transform topological information into a vector representation, persistence diagrams are
+converted into persistence landscapes:
+\begin{equation}
+\lambda_k(t) = k\text{-th largest value of } \left\{ \min(t - b_i,\; d_i - t) \right\}_+
+\end{equation}
+
+where $(b_i, d_i)$ denote the birth and death of the $i$-th topological feature, and
+$(\cdot)_+$ denotes the positive part.
+
+These topological features are later combined with embedding and TF-IDF features for
+classification and ambiguity detection.
 
 %% ---- Figure 4.2: Feature Extraction Pipeline ----
 \begin{figure}[H]

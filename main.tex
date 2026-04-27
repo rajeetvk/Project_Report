@@ -111,7 +111,7 @@
   }
 }
 
-\usepackage[hidelinks, unicode, breaklinks, bookmarks=true]{hyperref}
+\usepackage[colorlinks=true, linkcolor=red, citecolor=red, urlcolor=red, unicode, breaklinks, bookmarks=true]{hyperref}
 \usepackage{bookmark}
 \hypersetup{
     linktoc=all,
@@ -164,10 +164,10 @@ APRIL 2026\par}
 \setcounter{page}{1}
 \pagestyle{plain}
 
-\include{declaration}
-\include{certificate}
-\include{abstract}
-\include{acknowledgement}
+\input{declaration}
+\input{certificate}
+\input{abstract}
+\input{acknowledgement}
 
 \tableofcontents
 \clearpage
@@ -183,19 +183,19 @@ APRIL 2026\par}
 \setcounter{page}{1}
 \pagestyle{fancy}
 
-\include{chapter1}
-\include{chapter2}
-\include{chapter3}
-\include{chapter4}
-\include{chapter5}
-\include{chapter6}
-\include{chapter7}
+\input{chapter1}
+\input{chapter2}
+\input{chapter3}
+\input{chapter4}
+\input{chapter5}
+\input{chapter6}
+\input{chapter7}
 
 %% ===========================
 %% BIBLIOGRAPHY
 %% ===========================
 \cleardoublepage
 \addcontentsline{toc}{chapter}{Bibliography}
-\include{references}
+\input{references}
 
 \end{document}

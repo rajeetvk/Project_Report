@@ -2,66 +2,36 @@
 
 \section{Introduction}
 
-Social media has changed the way people communicate. Platforms like Twitter, Reddit, and
-Instagram have become spaces where people share their thoughts, feelings, and reactions in real
-time. Every day, millions of posts are written. Some express clear happiness or sadness. Many
-others are confusing, sarcastic, or somewhere in between.
+Social media platforms have fundamentally altered the landscape of human communication. Platforms like Twitter, Reddit, and Instagram have become spaces where individuals share thoughts, sentiments, and reactions in real time. Daily, millions of textual updates are generated across these networks, ranging from clear expressions of joy or sadness to complex, sarcastic, or inherently ambiguous discourse.
 
-Understanding the emotion behind a social media post is useful for many reasons. Companies
-want to know what customers think about their products. Researchers study mental health trends
-by analyzing what people write online. News organizations want to understand how the public
-is reacting to events. In all these cases, someone or something needs to read large amounts of
-text and decide what emotion is being expressed.
+Analyzing the emotional content of social media discourse is valuable for diverse applications. Corporations seek to monitor consumer sentiment regarding products, while researchers investigate mental health trends through the analysis of online expressions. Consequently, there is a critical need for automated systems capable of processing vast textual corpora to identify underlying emotional states.
 
-This project builds a system that does exactly that. It reads a social media post and decides
-whether the emotion is Positive, Negative, Neutral, or Ambiguous. The last category is what
-makes this project different from most existing systems.
+This project proposes a framework for the classification of social media text into four distinct emotional categories: Positive, Negative, Neutral, and Ambiguous. The inclusion of the latter category distinguishes this approach from conventional systems that lack explicit uncertainty handling.
 
 \section{Background and Motivation}
 
-Emotion detection from text is not a new problem. Researchers have been working on it for
-many years. But most systems that have been built share one common limitation: they always
-give a definite answer. They look at the input, run some computation, and return one class. They
-do this even when the text is genuinely unclear.
+Emotion detection from text is an established research problem that has been investigated for several decades. However, a significant majority of existing systems share a fundamental limitation: the requirement to produce a definitive classification for every input. Conventional models process inputs and map them to a single class within a fixed label set. This behavior persists even when the input text is genuinely unclear, forcing a potentially misleading classification rather than acknowledging uncertainty.
 
-Consider the sentence ``I am fine.'' On the surface, it looks positive. But in many situations,
-it is used sarcastically. A person who is upset but does not want to talk about it might say ``I am
-fine'' and mean exactly the opposite. A standard classifier will almost always return
-\textsc{positive} for this sentence. That is not really honest.
+Consider the sentence ``I am fine.'' On the surface, it appears positive; however, in many social contexts, it is used sarcastically to convey the opposite meaning. A standard classifier trained on surface-level features will typically return \textsc{positive} for this sentence, failing to account for its frequent sarcastic usage. Such a prediction is inherently misleading, as it overlooks the contextual nuances of the expression.
 
-This project is built on the idea that uncertainty is a valid and useful output. When a system
-does not know something, it should say so. This is especially important for emotion detection,
-where the cost of a wrong confident prediction can be higher than simply flagging the input as
-unclear.
+This research is founded on the principle that uncertainty is a valid and informative output. A robust system should explicitly acknowledge instances of uncertainty, particularly in emotion detection where the cost of an erroneously confident prediction may exceed that of flagging the input as unclear.
 
-The second motivation for this project is the use of geometric structure to detect ambiguity.
-When text is converted into a vector using a language model, texts with similar meanings end
-up close together in that vector space. What this project asks is: what does the neighbourhood
-around an input look like geometrically? If the neighbourhood is clean and well-organized, the
-input is probably easy to classify. If the neighbourhood is complicated, the input is probably in
-a border region between emotion clusters, which is a sign of ambiguity.
+A second primary motivation for this research is the utilization of geometric data structures to quantify ambiguity. When text is converted into a vector representation using a language model, semantically similar inputs are mapped to proximal regions in the embedding space. This project investigates the geometric structure of the neighbourhood around each input in the embedding space. If the neighbourhood is well-defined and homogenous, the input is likely easily discriminable. Conversely, if the neighbourhood exhibits complex geometric characteristics, the input likely resides in a boundary region between emotional clusters, indicating inherent ambiguity.
 
-To measure this geometric complexity, the project uses Topological Data Analysis (TDA),
-specifically a technique called persistent homology. This is not something that has been tried for
-ambiguity detection in social media emotion analysis before, which is the research contribution
-this project makes. Recent studies on emotion topology~\cite{emotion_topology} have explored
-the fundamental components of emotions from text using word embeddings, but the application of
-local TDA for ambiguity detection remains a novel frontier.
+To measure this geometric complexity, the project uses Topological Data Analysis (TDA), specifically a technique called persistent homology. The application of persistent homology to detect ambiguity in social media sentiment represents a novel contribution to the field of affective computing. Recent studies on emotion topology~\cite{emotion_topology} have explored the fundamental components of emotions from text using word embeddings, but the application of local TDA for ambiguity detection remains a novel frontier.
 
-A third motivation comes from looking at how previous models have performed on the
-GoEmotions dataset. Models like BERT-based classifiers and SVM systems that were trained
-on GoEmotions all struggle with the same problem: they do very well on the majority classes
-and poorly on minority ones, and they never say when they are unsure. The GoEmotions dataset
-is also known to have a lot of label noise and ambiguous samples because it was labelled by
-crowd workers who did not always agree. Furthermore, standard models often miss nuances such
-as sarcasm~\cite{sarcasm}, leading to misleading results. Standard models treat all
-samples as equally clear, which is a design flaw this project tries to address.
+A third motivation arises from an analysis of the performance of existing models on the
+GoEmotions dataset. Models such as BERT-based classifiers and SVM systems achieve
+high performance on majority classes while struggling with minority classes, and
+typically lack the capacity to express predictive uncertainty. The GoEmotions dataset
+is also known to exhibit significant label noise and ambiguous samples due to
+disagreements among annotators. Furthermore, standard models often fail to capture nuances such as sarcasm~\cite{sarcasm}, leading to misleading results. Traditional models treat all inputs as equally discriminable, a limitation this project seeks to rectify through explicit ambiguity detection.
 
 \section{Problem Statement}
-
-The problem addressed in this project can be stated as follows. Given a short piece of text
+ 
+The research problem addressed in this study is defined as follows. Given a short piece of text
 from a social media platform, the objective is to build a system that:
-
+ 
 \begin{enumerate}
     \item Classifies the text into one of three emotion categories: Positive, Negative, or
     Neutral.
@@ -81,7 +51,7 @@ classifications.
 
 \section{Objectives}
 
-The main objectives of this project are as follows.
+The primary objectives of this research are as follows:
 
 \begin{enumerate}
     \item Build a sentiment classification system that works on informal social media text from

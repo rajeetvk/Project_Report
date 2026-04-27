@@ -22,23 +22,15 @@ output, which can be Positive, Negative, Neutral, or Ambiguous.
 
 The key achievements of this project are:
 
-A working emotion classifier was built on the full GoEmotions dataset (43,410 training samples,
-5,427 test samples), achieving an accuracy of 0.59 and a weighted F1 score of 0.60. These
-numbers reflect the genuine difficulty of the dataset, not a fundamental failure of the approach.
+\begin{itemize}
+    \item \textbf{Working Emotion Classifier:} A working emotion classifier was built on the full GoEmotions dataset (43,410 training samples, 5,427 test samples), achieving an accuracy of 0.59 and a weighted F1 score of 0.60. These numbers reflect the genuine difficulty of the dataset, not a fundamental failure of the approach.
 
-A topological ambiguity detection mechanism was introduced. This mechanism uses local
-Vietoris-Rips persistent homology computed fresh at inference time for every input. The number
-of H1 loops in the persistence diagram provides a geometric signal of ambiguity that is
-independent of the classifier's output.
+    \item \textbf{Topological Ambiguity Detection:} A topological ambiguity detection mechanism was introduced. This mechanism uses local Vietoris-Rips persistent homology computed fresh at inference time for every input. The number of H1 loops in the persistence diagram provides a geometric signal of ambiguity that is independent of the classifier's output.
 
-The system correctly identifies genuinely ambiguous sentences. ``i dont know how i feel''
-returns \textsc{ambiguous} due to an extreme loop count of 15. ``i will kill you'' returns
-\textsc{ambiguous} due to a very low confidence gap of 0.06. ``do this'' returns
-\textsc{ambiguous} due to moderate topology combined with low classifier confidence.
+    \item \textbf{Identification of Ambiguous Sentences:} The system correctly identifies genuinely ambiguous sentences. ``i dont know how i feel'' returns \textsc{ambiguous} due to an extreme loop count of 15. ``i will kill you'' returns \textsc{ambiguous} due to a very low confidence gap of 0.06. ``do this'' returns \textsc{ambiguous} due to moderate topology combined with low classifier confidence.
 
-The system provides interpretable outputs. When it returns \textsc{ambiguous}, it explains
-which rule triggered the decision. This is important for practical deployment where users need
-to understand and trust the system's decisions.
+    \item \textbf{Interpretable Outputs:} The system provides interpretable outputs. When it returns \textsc{ambiguous}, it explains which rule triggered the decision. This is important for practical deployment where users need to understand and trust the system's decisions.
+\end{itemize}
 
 \section{Advantages of the Approach}
 

@@ -13,11 +13,9 @@ Sentiment analysis is the task of identifying whether a piece of text expresses 
 negative, or neutral opinion. It is one of the oldest and most studied problems in natural language
 processing.
 
-to individual words and then combining those scores to get an overall sentiment. This
-is a well-known approach for early systems. These were designed specifically for social media
-text and handled punctuation, capitalization, and emoticons as signals of sentiment intensity.
+Lexicon-based methods like VADER assign scores to individual words and then combine those scores to get an overall sentiment. This is a well-known approach for early systems. These were designed specifically for social media text and handled punctuation, capitalization, and emoticons as signals of sentiment intensity.
 Such systems are fast and work reasonably well for clear, unambiguous text. However, they
-often fail on sarcasm and do not have any mechanism to say when it is unsure.
+often fail on sarcasm and do not have any mechanism to say when they are unsure.
 
 Machine learning approaches improved on this. Systems based on Naive Bayes, Support Vector
 Machines (SVM), and logistic regression used bag-of-words representations. These models

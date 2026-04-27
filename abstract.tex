@@ -11,12 +11,7 @@ handling ambiguity and contextual uncertainty. Traditional models based on TF-ID
 classification algorithms often fail to capture nuanced emotional states, particularly in
 sentences with overlapping or unclear sentiment.
 
-To overcome this, the proposed system integrates Topological Data Analysis (TDA) with machine
-learning to analyze the geometric structure of text embeddings. By applying persistent homology
-on vector representations, the model identifies structural patterns that indicate ambiguity in
-emotional expression. The classification pipeline is built using TF-IDF features combined with
-a Logistic Regression model, ensuring computational efficiency while maintaining
-interpretability.
+To overcome this, the proposed system integrates Topological Data Analysis (TDA) with machine learning to analyze the geometric structure of text embeddings. By applying persistent homology on dense semantic vectors, the model identifies structural patterns that indicate ambiguity in emotional expression. The classification pipeline is built using sentence embeddings and TF-IDF features combined with an ensemble of XGBoost models, ensuring high classification performance while maintaining interpretability.
 
 A key contribution of this work is the introduction of an ambiguity detection mechanism,
 enabling the system to flag uncertain emotional predictions rather than forcing incorrect

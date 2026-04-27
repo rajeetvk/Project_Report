@@ -73,11 +73,12 @@ like ``yolo'', ``fomo'', ``lol'', and ``idk'' carry emotional meaning but are of
 by models trained on more formal text. The embedding models used to represent these words
 may not give them accurate positions in the semantic space.
 
-Several BERT-based systems have been published on GoEmotions. Most report accuracy in the
-range of 0.46 to 0.58 on the full 28-class problem. On the simplified 3-class version (Positive,
-Negative, Neutral), results are higher but still reflect the difficulty of the dataset. None of
+Several BERT-based systems have been published on GoEmotions~\cite{bert_goemotions, modernbert_goemotions, hybrid_emotion}. Most report accuracy in the
+range of 0.46 to 0.58 on the full 28-class problem~\cite{goemotions_comparison, llm_goemotions}. On the simplified 3-class version (Positive,
+Negative, Neutral), results are higher but still reflect the difficulty of the dataset~\cite{goemotions_google}. None of
 these systems include any mechanism for detecting when a sample is too ambiguous to classify
-reliably.
+reliably, although recent studies have explored fine-grained emotion detection using advanced
+transformer models~\cite{bert_emotion, goemotions_comparison}.
 
 \section{Ambiguity and Uncertainty in Natural Language Processing}
 
@@ -100,6 +101,10 @@ classifier's own confidence. It does not use any external signal about the struc
 
 The key limitation of all these approaches is that they use the model's own output to
 estimate uncertainty. If the model is confidently wrong, none of these methods will catch it.
+Recent research on topological quantification of ambiguity~\cite{tda_ambiguity, blowfish} suggests
+that geometric signals can provide a more robust measure of uncertainty. Other works such as
+MARCH~\cite{march_ambiguity} have evaluated the intersection of ambiguity interpretation and
+multi-hop inference, further highlighting the complexity of handling unclear inputs.
 What is needed is an external signal that looks at the data itself, not just at what the model says.
 
 \section{Topological Data Analysis in Natural Language Processing}
@@ -119,7 +124,14 @@ disappear quickly are considered noise.
 TDA has been applied to NLP in several ways. Zhu~\cite{zhu} applied persistent homology to text
 classification and showed that topological features captured information that was not present in
 bag-of-words representations. Michel et al.~\cite{michel} analyzed the topology of sentence embedding
-spaces and found that the topology changes depending on the semantic content of the text.
+spaces and found that the topology changes depending on the semantic content of the text. Recent
+reviews~\cite{tda_review} have highlighted the potential of topological deep learning beyond
+standard persistence. In affective computing, AffectiveTDA~\cite{affective_tda} has been used
+to improve both analysis and explainability. Beyond NLP, TDA has found success in analyzing
+complex signals in fields such as cardiology~\cite{tda_cardio} and neurophysiology, where it is
+used as a tool for EEG processing~\cite{tda_eeg_tool}. Tools such as giotto-tda~\cite{giotto_tda},
+teaspoon~\cite{teaspoon}, and TDAvec~\cite{tdavec} have made these complex mathematical
+approaches more accessible to the machine learning community.
 
 What this project does differently is apply persistent homology at the \textbf{neighbourhood
 level at inference time}. Instead of computing topology over the whole dataset, it computes a

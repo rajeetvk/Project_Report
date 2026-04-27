@@ -204,11 +204,11 @@ The number of neighbours was chosen empirically:
 \end{itemize}
 A value of 24 provides stable and meaningful topological representations.
 
-\subsection{Why SMOTE Was Not Used}
-
-SMOTE generates synthetic samples by interpolation. This alters the geometry of the data.
 Since TDA depends on the real geometric structure, adding synthetic points would distort
-topological features and reduce reliability.
+topological features and reduce reliability. Alternative approaches like Simplicial
+SMOTE~\cite{simplicial_smote} or TS-SMOTE~\cite{ts_smote} attempt to preserve local structure
+during oversampling, but for this work, preserving the original embedding geometry was deemed
+paramount.
 
 Instead, class imbalance is handled through threshold tuning.
 
@@ -224,7 +224,8 @@ Three binary XGBoost classifiers are trained using a one-vs-rest approach:
 Each classifier outputs a probability score. The highest probability determines the predicted
 class, subject to ambiguity checks.
 
-XGBoost is chosen because:
+XGBoost is chosen because it has shown strong performance in multi-class emotion
+classification tasks~\cite{xgboost_eeg}. Specifically:
 \begin{itemize}
     \item It handles mixed feature types well
     \item It is robust to feature scaling differences

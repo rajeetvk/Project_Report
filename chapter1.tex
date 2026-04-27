@@ -44,15 +44,18 @@ a border region between emotion clusters, which is a sign of ambiguity.
 To measure this geometric complexity, the project uses Topological Data Analysis (TDA),
 specifically a technique called persistent homology. This is not something that has been tried for
 ambiguity detection in social media emotion analysis before, which is the research contribution
-this project makes.
+this project makes. Recent studies on emotion topology~\cite{emotion_topology} have explored
+the fundamental components of emotions from text using word embeddings, but the application of
+local TDA for ambiguity detection remains a novel frontier.
 
 A third motivation comes from looking at how previous models have performed on the
 GoEmotions dataset. Models like BERT-based classifiers and SVM systems that were trained
 on GoEmotions all struggle with the same problem: they do very well on the majority classes
 and poorly on minority ones, and they never say when they are unsure. The GoEmotions dataset
 is also known to have a lot of label noise and ambiguous samples because it was labelled by
-crowd workers who did not always agree. Standard models treat all samples as equally clear,
-which is a design flaw this project tries to address.
+crowd workers who did not always agree. Furthermore, standard models often miss nuances such
+as sarcasm~\cite{sarcasm_senti}, leading to misleading results. Standard models treat all
+samples as equally clear, which is a design flaw this project tries to address.
 
 \section{Problem Statement}
 

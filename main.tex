@@ -1,3 +1,4 @@
+\pdfminorversion=5
 \documentclass[12pt,a4paper]{report}
 
 %% Packages
@@ -112,10 +113,10 @@
 }
 
 
-\usepackage[hidelinks, unicode, breaklinks, bookmarks=true, plainpages=false, pdfpagelabels, linktocpage=true]{hyperref}
+\usepackage[hidelinks, unicode, breaklinks, bookmarks=true, plainpages=false, pdfpagelabels, linktocpage=true, pdfpagemode=UseNone]{hyperref}
 \usepackage{bookmark}
 \hypersetup{
-    linktoc=all,
+    pdfstartview={FitH},
     pdftitle={Emotion Detection from Social Media Posts with Ambiguity Detection},
     pdfauthor={Arjeet Singh}
 }

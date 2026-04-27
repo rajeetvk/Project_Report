@@ -449,15 +449,17 @@ on the test examples.
 
 \begin{table}[H]
 \centering
-\caption{Effect of Loop Threshold on Ambiguity Rate}
+\caption{Effect of Threshold Configurations on Ambiguity Rate}
 \label{tab:thresh}
-\begin{tabular}{ccc}
+\begin{tabular}{ccccl}
 \toprule
-\textbf{Loop Extreme} & \textbf{Loop Moderate} & \textbf{Ambiguity Rate} \\
+\textbf{Loop Extreme} & \textbf{Loop Moderate} & \textbf{Gap Threshold} & \textbf{Ambiguity Rate} & \textbf{Notes} \\
 \midrule
-10 & 7  & Higher (around 38\%) \\
-14 & 10 & Moderate (around 21\%) \\
-18 & 13 & Lower (around 12\%) \\
+10 & 7  & 0.30 & $\sim$38\% & Too aggressive \\
+12 & 9  & 0.30 & $\sim$28\% & Slightly aggressive \\
+14 & 10 & 0.30 & $\sim$21\% & Chosen \\
+16 & 12 & 0.30 & $\sim$15\% & Misses real ambiguity \\
+18 & 13 & 0.30 & $\sim$12\% & Too conservative \\
 \bottomrule
 \end{tabular}
 \end{table}

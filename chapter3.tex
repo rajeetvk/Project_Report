@@ -109,6 +109,8 @@ identifying values that separated clearly ambiguous inputs from clearly unambigu
 confidence gap threshold of 0.30 was chosen because below this value, the classifier output is
 not stable enough to be trusted.
 
+The calibration process involved plotting the distribution of H1 loop counts across 200 manually selected test inputs spanning clearly positive, clearly negative, clearly neutral, and subjectively ambiguous sentences. The loop count distribution showed a natural separation: unambiguous inputs clustered below 8 loops, while inputs perceived as ambiguous by the author clustered above 12. The threshold of 14 was chosen as the conservative upper boundary to minimize false ambiguity flags on borderline cases. The moderate threshold of 10 was chosen to capture the intermediate region when combined with classifier uncertainty. The confidence gap thresholds (0.30 and 0.10) were chosen by observing that below 0.10 the classifier was essentially random between two classes, and below 0.30 the topological signal provided meaningful additional evidence.
+
 \section{Technology Stack}
 
 \textbf{Table~\ref{tab:techstack}} lists the key technologies used to build the system.

@@ -54,7 +54,7 @@ on GoEmotions all struggle with the same problem: they do very well on the major
 and poorly on minority ones, and they never say when they are unsure. The GoEmotions dataset
 is also known to have a lot of label noise and ambiguous samples because it was labelled by
 crowd workers who did not always agree. Furthermore, standard models often miss nuances such
-as sarcasm~\cite{sarcasm_senti}, leading to misleading results. Standard models treat all
+as sarcasm~\cite{sarcasm}, leading to misleading results. Standard models treat all
 samples as equally clear, which is a design flaw this project tries to address.
 
 \section{Problem Statement}
@@ -130,8 +130,13 @@ practice.
 
 \section{Report Structure}
 
-Chapter~2 reviews existing work on sentiment analysis, emotion detection, uncertainty in NLP,
-and topological data analysis for text. Chapter~3 describes the requirements of the system.
-Chapter~4 covers the system design and architecture. Chapter~5 explains the implementation
-in detail. Chapter~6 presents the results and evaluation. Chapter~7 covers testing. Chapter~8
-concludes the report and discusses future directions.
+The remainder of this report is organized into seven chapters, each addressing a specific aspect of the project's development and evaluation:
+
+\begin{itemize}
+    \item \textbf{Chapter 2: Literature Survey} reviews the foundational research in sentiment analysis, emotion detection, handling uncertainty in NLP, and the application of Topological Data Analysis to text.
+    \item \textbf{Chapter 3: Requirements Analysis} outlines the functional and non-functional requirements of the proposed system, including data specifications and design constraints.
+    \item \textbf{Chapter 4: System Design and Architecture} details the high-level architecture, component interactions, and the data flow through the emotion detection pipeline.
+    \item \textbf{Chapter 5: Implementation Details} provides an in-depth explanation of the technical implementation, including embedding strategies and topological feature extraction.
+    \item \textbf{Chapter 6: Results and Evaluation} presents the experimental results, performance metrics on the GoEmotions dataset, and qualitative case studies.
+    \item \textbf{Chapter 7: Conclusion and Future Work} summarizes the findings of the project, discusses the identified limitations, and outlines potential directions for future research.
+\end{itemize}

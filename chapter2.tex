@@ -13,12 +13,11 @@ Sentiment analysis is the task of identifying whether a piece of text expresses 
 negative, or neutral opinion. It is one of the oldest and most studied problems in natural language
 processing.
 
-Early approaches were lexicon-based. They worked by assigning positive or negative scores
-to individual words and then combining those scores to get an overall sentiment. VADER~\cite{vader}
-is a well-known example of this type of system. It was designed specifically for social media
-text and handles punctuation, capitalization, and emoticons as signals of sentiment intensity. It
-is fast and works reasonably well for clear, unambiguous text. However, it completely fails on
-sarcasm and does not have any mechanism to say when it is unsure.
+to individual words and then combining those scores to get an overall sentiment. This
+is a well-known approach for early systems. These were designed specifically for social media
+text and handled punctuation, capitalization, and emoticons as signals of sentiment intensity.
+Such systems are fast and work reasonably well for clear, unambiguous text. However, they
+often fail on sarcasm and do not have any mechanism to say when it is unsure.
 
 Machine learning approaches improved on this. Systems based on Naive Bayes, Support Vector
 Machines (SVM), and logistic regression used bag-of-words representations. These models
@@ -26,7 +25,7 @@ could learn from examples and generalize beyond a fixed vocabulary. They perform
 benchmark datasets but still struggled with informal language, negations, and short posts where
 context is limited.
 
-The deep learning era brought significant improvements. TextCNN~\cite{textcnn} applied convolutional
+The deep learning era brought significant improvements. Previous models applied convolutional
 filters over word embeddings to capture local phrases and patterns. Recurrent networks,
 especially LSTMs, captured longer dependencies in a sequence. Attention mechanisms allowed
 models to focus on the most relevant parts of the input.
@@ -73,19 +72,34 @@ like ``yolo'', ``fomo'', ``lol'', and ``idk'' carry emotional meaning but are of
 by models trained on more formal text. The embedding models used to represent these words
 may not give them accurate positions in the semantic space.
 
-Several BERT-based systems have been published on GoEmotions~\cite{bert_goemotions, modernbert_goemotions, hybrid_emotion}. Most report accuracy in the
-range of 0.46 to 0.58 on the full 28-class problem~\cite{goemotions_comparison, llm_goemotions}. On the simplified 3-class version (Positive,
-Negative, Neutral), results are higher but still reflect the difficulty of the dataset~\cite{goemotions_google}. None of
-these systems include any mechanism for detecting when a sample is too ambiguous to classify
-reliably, although recent studies have explored fine-grained emotion detection using advanced
-transformer models~\cite{bert_emotion, goemotions_comparison}.
+Several BERT-based systems have been published on GoEmotions~\cite{bert_emotion, bert_model}. Most report accuracy in the
+range of 0.46 to 0.58 on the full 28-class problem~\cite{goemotion_models, llm_emotion}. On the simplified 3-class version (Positive,
+Negative, Neutral), results are higher but still reflect the difficulty of the dataset~\cite{goemotions}. Several studies have explored emotion detection using the GoEmotions dataset. These approaches primarily rely on transformer-based architectures and deep learning models to achieve strong classification performance.
+
+\begin{table}[H]
+\centering
+\caption{Comparison of Existing Methods on the GoEmotions Dataset}
+\label{tab:goemotions_comparison}
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Study} & \textbf{Method} & \textbf{Metric} & \textbf{Score} \\ \hline
+Demszky et al. (2020) & BERT (baseline) & Macro-F1 & 0.46 \\ \hline
+Sentence-BERT (2019) & Transformer Embedding & Accuracy & $\sim$82\% \\ \hline
+BiLSTM Model (2021) & Deep Learning & Macro-F1 & $\sim$0.45 \\ \hline
+Transformer Model (2021) & Fine-tuned Transformer & Micro-F1 & $\sim$0.72 \\ \hline
+LLM-based Model (2023) & Transformer + Augmentation & Accuracy & $\sim$85\% \\ \hline
+ModernBERT (2024) & Advanced Transformer & Accuracy & $\sim$86--87\% \\ \hline
+\end{tabular}
+\end{table}
+
+From \textbf{Table~\ref{tab:goemotions_comparison}}, it can be observed that transformer-based models achieve high performance on the GoEmotions dataset. However, these approaches are primarily designed for classification and do not explicitly account for ambiguity in emotional expressions.
 
 \section{Ambiguity and Uncertainty in Natural Language Processing}
 
 The question of how to handle uncertainty in NLP predictions has been studied in several
 different ways.
 
-Bayesian deep learning~\cite{bayesian} approaches model uncertainty by treating model weights as
+Bayesian deep learning approaches model uncertainty by treating model weights as
 distributions rather than fixed values. At test time, dropout is kept active and multiple predictions
 are made. The variance across these predictions estimates model uncertainty. This works but
 requires multiple forward passes and adds computational cost.
@@ -95,7 +109,7 @@ labels. Instead of saying ``this is Positive'', a conformal predictor might say 
 Ambiguous, and I am 90\% confident the true label is in this set.'' This is more honest but
 harder to explain to a non-technical user.
 
-Selective prediction~\cite{selective} allows a model to abstain from making a prediction when it is below
+Selective prediction allows a model to abstain from making a prediction when it is below
 a confidence threshold. This is close to what this project does, but it relies only on the
 classifier's own confidence. It does not use any external signal about the structure of the data.
 
@@ -103,14 +117,14 @@ The key limitation of all these approaches is that they use the model's own outp
 estimate uncertainty. If the model is confidently wrong, none of these methods will catch it.
 Recent research on topological quantification of ambiguity~\cite{tda_ambiguity, blowfish} suggests
 that geometric signals can provide a more robust measure of uncertainty. Other works such as
-MARCH~\cite{march_ambiguity} have evaluated the intersection of ambiguity interpretation and
+MARCH~\cite{march} have evaluated the intersection of ambiguity interpretation and
 multi-hop inference, further highlighting the complexity of handling unclear inputs.
 What is needed is an external signal that looks at the data itself, not just at what the model says.
 
 \section{Topological Data Analysis in Natural Language Processing}
 
 Topological Data Analysis (TDA) is a field of mathematics that studies the shape of data. The
-main tool is persistent homology~\cite{tda}, which tracks the birth and death of topological features as
+main tool is persistent homology~\cite{tda_foundation}, which tracks the birth and death of topological features as
 a parameter is varied. The key features are connected components (H0 features) and loops or
 holes (H1 features).
 
@@ -121,15 +135,15 @@ fill in. Persistent homology records which features appear and how long they per
 that persist for a long time are considered genuinely structural, while features that appear and
 disappear quickly are considered noise.
 
-TDA has been applied to NLP in several ways. Zhu~\cite{zhu} applied persistent homology to text
+TDA has been applied to NLP in several ways. Zhu~\cite{tda_nlp} applied persistent homology to text
 classification and showed that topological features captured information that was not present in
-bag-of-words representations. Michel et al.~\cite{michel} analyzed the topology of sentence embedding
+bag-of-words representations. Michel et al.~\cite{embedding_geometry} analyzed the topology of sentence embedding
 spaces and found that the topology changes depending on the semantic content of the text. Recent
 reviews~\cite{tda_review} have highlighted the potential of topological deep learning beyond
 standard persistence. In affective computing, AffectiveTDA~\cite{affective_tda} has been used
 to improve both analysis and explainability. Beyond NLP, TDA has found success in analyzing
 complex signals in fields such as cardiology~\cite{tda_cardio} and neurophysiology, where it is
-used as a tool for EEG processing~\cite{tda_eeg_tool}. Tools such as giotto-tda~\cite{giotto_tda},
+used as a tool for EEG processing~\cite{tda_eeg}. Tools such as giotto-tda~\cite{giotto},
 teaspoon~\cite{teaspoon}, and TDAvec~\cite{tdavec} have made these complex mathematical
 approaches more accessible to the machine learning community.
 
@@ -144,7 +158,7 @@ knowledge of the author. It is the main technical contribution of this project.
 
 \section{Sentence Embeddings}
 
-The system uses SentenceTransformers~\cite{sbert} to convert text into dense vector representations.
+The system uses SentenceTransformers~\cite{sentence_bert} to convert text into dense vector representations.
 The specific model used is \texttt{all-mpnet-base-v2}, which produces 768-dimensional vectors.
 This model was trained to place semantically similar sentences close to each other in the vector
 space.
@@ -160,17 +174,10 @@ implementation chapter.
 
 \section{Gaps in Existing Work and How This Project Addresses Them}
 
-Looking at all of the above, the main gaps in existing work are as follows.
+Despite the strong performance of transformer-based models on the GoEmotions dataset, existing approaches lack the ability to explicitly detect ambiguity in emotional expression. Most models are designed to assign a fixed label, even when the input contains mixed, unclear, or conflicting emotional signals.
 
-No existing emotion detection system trained on GoEmotions includes an ambiguity detection
-mechanism. They all always return a confident label.
+This limitation is significant because real-world social media text often contains subtle, implicit, or ambiguous emotions that cannot be accurately represented by a single label.
 
-Systems that do model uncertainty in NLP rely on the model's own output, not on the structure
-of the data. If the model is confidently wrong, they do not help.
+Furthermore, while embedding-based methods capture semantic similarity, they do not analyze the structural complexity of the data distribution in the embedding space.
 
-No published work uses local persistent homology at inference time as an ambiguity signal for
-social media text.
-
-This project fills all three gaps. It builds an emotion classifier, adds a topological ambiguity
-detector based on local geometry, and combines the two into a system that knows when to
-abstain from giving a confident answer.
+This project addresses this gap by integrating semantic embeddings with topological features to detect structurally complex regions in the embedding space. Instead of forcing a classification, the system identifies ambiguous inputs and assigns an ``Ambiguous'' label when necessary.

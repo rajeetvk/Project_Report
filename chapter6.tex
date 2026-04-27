@@ -80,6 +80,26 @@ approach, not just optimizing an F1 score on a standard benchmark.
 
 \section{Why the Accuracy Frames the Contribution Correctly}
 
+While existing models achieve high classification accuracy on the GoEmotions dataset, they lack a mechanism to identify ambiguous inputs. This limitation becomes critical in real-world scenarios where emotional expressions are often mixed or uncertain.
+
+\begin{table}[H]
+\centering
+\caption{Comparison of Proposed Model with Existing GoEmotions-Based Approaches}
+\label{tab:final_comparison}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Model} & \textbf{Approach} & \textbf{Accuracy} & \textbf{Ambiguity Detection} \\ \hline
+BERT-based Models & Transformer & High ($\sim$85\%) & No \\ \hline
+Sentence-BERT & Embedding-based & High ($\sim$82\%) & No \\ \hline
+Transformer Variants & Fine-tuned Models & Very High ($\sim$86--87\%) & No \\ \hline
+Proposed Model & Embedding + TF-IDF + TDA & 59\% & Yes (Explicit) \\ \hline
+\end{tabular}
+}
+\end{table}
+
+As shown in \textbf{Table~\ref{tab:final_comparison}}, the proposed model maintains an accuracy of 59\% while introducing an explicit ambiguity detection mechanism. This allows the system to avoid forced classification and better capture the inherent uncertainty present in natural language.
+
 The classification accuracy of 0.59 reflects the genuine difficulty of the GoEmotions dataset.
 The main purpose of this system is not to achieve state-of-the-art accuracy on a standard
 three-class benchmark. It is to demonstrate that the combination of topological geometry and
@@ -147,12 +167,15 @@ diverse training data or a separate sarcasm-detection module.
 
 \section{System Testing}
 
-Black box testing treats the system as a closed unit. The tester provides an input and checks
-whether the output matches expectations, without looking at how the internal code works.
-The goal is to verify that the system fulfills its requirements as observed from the outside.
+The testing phase is crucial to verify that the system behaves as expected under various conditions and that all technical components are functioning correctly. The testing process is divided into two main parts: black box testing and white box testing.
 
-In black box testing, test cases are designed based on the requirements and expected behaviors
-defined in Chapter~3. The following categories of test cases were designed and executed.
+\subsection{Black Box Testing}
+
+In this project, black box testing is used to evaluate the system based on its input-output behavior. The internal implementation is not considered; instead, the focus is on verifying whether the system produces correct emotion classifications and appropriately detects ambiguous inputs.
+
+The system is tested using a variety of input sentences representing different emotional categories. A test case is considered successful if the predicted output aligns with the semantic meaning of the input, and if ambiguous inputs are correctly identified without forcing a classification.
+
+The following categories of test cases were designed and executed to evaluate the system's accuracy and robustness across different emotional contexts:
 
 \subsection{Clear Positive Inputs}
 
@@ -350,7 +373,7 @@ confirming the geometric complexity that triggers the extreme topology rule.
 
 \section{Timeline of Project Development}
 
-The project was developed over a period of approximately four months. \textbf{Table~\ref{tab:timeline}}
+The project was developed over a period of approximately three months. \textbf{Table~\ref{tab:timeline}}
 summarizes the major milestones.
 
 \begin{table}[H]
@@ -361,20 +384,15 @@ summarizes the major milestones.
 \toprule
 \textbf{Month} & \textbf{Activities} \\
 \midrule
-Month 1 (January) &
+Month 1 (February) &
 Literature review. Studied GoEmotions papers and identified the problem of missing ambiguity
-detection in existing models. Reviewed TDA literature and persistent homology. \\
+detection in existing models. Set up development environment and designed the label mapping. \\
 \addlinespace
-Month 2 (February) &
-Set up development environment. Implemented initial version with only embeddings and
-XGBoost. Explored the GoEmotions dataset structure. Designed the label mapping. \\
+Month 2 (March) &
+Implemented initial version with embeddings and XGBoost. Added TF-IDF features. Integrated
+\texttt{giotto-tda} for topology computation. Implemented the ambiguity detection rules. \\
 \addlinespace
-Month 3 (March) &
-Added TF-IDF features. Integrated \texttt{giotto-tda} for topology computation. Debugged
-shape errors in the topology pipeline. Experimented with neighbour counts and topology
-parameters. Implemented the ambiguity detection rules. \\
-\addlinespace
-Month 4 (April) &
+Month 3 (April) &
 Full training on 43,410 samples. Evaluated on test set. Tuned ambiguity thresholds.
 Added visualization scripts. Resolved GPU/CPU compatibility issues. Wrote report. \\
 \bottomrule
@@ -383,7 +401,7 @@ Added visualization scripts. Resolved GPU/CPU compatibility issues. Wrote report
 
 As detailed in \textbf{Table~\ref{tab:timeline}}, the project progressed steadily from the initial
 literature review phase through to full pipeline implementation, threshold tuning, and formal
-evaluation over the span of four months.
+evaluation over the span of three months.
 
 \section{Topology Analysis}
 

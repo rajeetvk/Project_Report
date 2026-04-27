@@ -111,9 +111,8 @@ Selective prediction allows a model to abstain from making a prediction when it 
 a confidence threshold. This is close to what this project does, but it relies only on the
 classifier's own confidence. It does not use any external signal about the structure of the data.
 
-The key limitation of all these approaches is that they use the model's own output to
-estimate uncertainty. If the model is confidently wrong, none of these methods will catch it.
-Recent research on topological quantification of ambiguity~\cite{tda_ambiguity, blowfish} suggests
+A key limitation shared by confidence-based selective prediction and Monte Carlo dropout is that both rely on the model's internal state to estimate uncertainty. If the model has learned to be systematically overconfident on a particular type of ambiguous input — as is common with majority-class-biased training — neither method will detect the uncertainty.
+Topological signals, by contrast, are computed from the actual geometric distribution of training data rather than from model outputs. This makes them robust to the specific failure mode of confident-but-wrong predictions, which is particularly prevalent in imbalanced datasets like GoEmotions. Recent research on topological quantification of ambiguity~\cite{tda_ambiguity, blowfish} suggests
 that geometric signals can provide a more robust measure of uncertainty. Other works such as
 MARCH~\cite{march} have evaluated the intersection of ambiguity interpretation and
 multi-hop inference, further highlighting the complexity of handling unclear inputs.

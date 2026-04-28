@@ -393,38 +393,6 @@ As shown in \textbf{Figure~\ref{fig:case2}}, the point cloud for this input is s
 across multiple emotion classes. The persistence diagram reveals numerous long-lived H1 loops,
 confirming the geometric complexity that triggers the extreme topology rule.
 
-\section{Timeline of Project Development}
-
-The project was developed over a period of approximately three months. \textbf{Table~\ref{tab:timeline}}
-summarizes the major milestones.
-
-\begin{table}[H]
-\centering
-\caption{Project Development Timeline}
-\label{tab:timeline}
-\begin{tabular}{lp{9cm}}
-\toprule
-\textbf{Month} & \textbf{Activities} \\
-\midrule
-Month 1 (February) &
-Literature review. Studied GoEmotions papers and identified the problem of missing ambiguity
-detection in existing models. Set up development environment and designed the label mapping. \\
-\addlinespace
-Month 2 (March) &
-Implemented initial version with embeddings and XGBoost. Added TF-IDF features. Integrated
-\texttt{giotto-tda} for topology computation. Implemented the ambiguity detection rules. \\
-\addlinespace
-Month 3 (April) &
-Full training on 43,410 samples. Evaluated on test set. Tuned ambiguity thresholds.
-Added visualization scripts. Resolved GPU/CPU compatibility issues. Wrote report. \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-As detailed in \textbf{Table~\ref{tab:timeline}}, the project progressed steadily from the initial
-literature review phase through to full pipeline implementation, threshold tuning, and formal
-evaluation over the span of three months.
-
 \section{Topology Analysis}
 
 During development, the persistence diagrams and point clouds were visualized for several

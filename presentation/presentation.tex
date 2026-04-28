@@ -38,27 +38,172 @@
 
 % Slide 1
 \begin{frame}{Introduction, Objective and Contribution}
-    \input{slide1}
+    \textbf{Introduction}
+    \begin{itemize}
+        \item Emotion detection is critical for understanding social media sentiment.
+        \item Traditional models force every input into a fixed class, even when ambiguous.
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{Objective}
+    \begin{itemize}
+        \item Develop a system that can explicitly flag \textbf{ambiguous} inputs.
+        \item Use Topological Data Analysis (TDA) to quantify semantic uncertainty.
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{Contribution}
+    \begin{itemize}
+        \item Integration of TDA persistence landscapes with BERT and XGBoost.
+        \item Novel ambiguity detection rules based on geometric "loop count" (H1).
+        \item Robustness against "confident-but-wrong" failure modes in NLP.
+    \end{itemize}
 \end{frame}
 
 % Slide 2
 \begin{frame}{Background / Existing Work}
-    \input{slide2}
+    \textbf{Existing Work}
+    \begin{itemize}
+        \item BERT and Sentence-BERT models are state-of-the-art for emotion classification.
+        \item Datasets like GoEmotions provide fine-grained labels (28 categories).
+    \end{itemize}
+
+    \vspace{0.2cm}
+    \textbf{Problems with Existing Work}
+    \begin{itemize}
+        \item \textbf{Forced Choice:} Models pick a class even for nonsensical or mixed-emotion text.
+        \item \textbf{Overconfidence:} Neural networks are often overconfident on unseen samples.
+    \end{itemize}
+
+    \vspace{0.2cm}
+    \textbf{Why This Project is Needed}
+    \begin{itemize}
+        \item Real-world data is messy; sarcasm and semantic overlaps create genuine ambiguity.
+        \item Identifying uncertainty is critical for reliable AI systems.
+    \end{itemize}
+
+    \vspace{0.2cm}
+    \textbf{The Solution}
+    \begin{itemize}
+        \item TDA analyzes the \textbf{geometry} of the training neighborhood.
+        \item Complex shapes (loops) in the neighborhood signal high uncertainty.
+    \end{itemize}
 \end{frame}
 
 % Slide 3
 \begin{frame}{Proposed System and Architecture}
-    \input{slide3}
+    \begin{columns}[T]
+        \begin{column}{0.45\textwidth}
+            \textbf{System Design}
+            \begin{center}
+                \resizebox{!}{0.72\textheight}{
+                \begin{tikzpicture}[
+                  font=\tiny,
+                  node distance=0.5cm,
+                  box/.style={draw, rectangle, rounded corners=2pt, thick, align=center, text width=2.2cm, fill=blue!5},
+                  proc/.style={draw, rectangle, rounded corners=2pt, thick, align=center, text width=2.2cm, fill=green!5},
+                  amb/.style={draw, rectangle, rounded corners=2pt, thick, align=center, text width=2.2cm, fill=orange!10},
+                  out/.style={draw, rectangle, rounded corners=2pt, thick, align=center, text width=2.2cm, fill=red!5},
+                  arr/.style={-{Stealth[length=3pt]}, thick}
+                ]
+                  \node[box] (in) {\textbf{Input Text}};
+                  \node[proc, below=of in] (emb) {\textbf{Sentence-BERT}\\[1pt]Embedding};
+                  \node[proc, left=1.0cm of emb, yshift=-0.8cm] (tfidf) {\textbf{TF-IDF}\\[1pt]Features};
+                  \node[proc, right=1.0cm of emb, yshift=-0.4cm] (knn) {\textbf{K-Nearest}\\[1pt]Neighbours};
+                  \node[proc, below=of knn] (tda) {\textbf{Giotto-TDA}\\[1pt]Persistence};
+                  \node[box, below=2.2cm of emb] (fuse) {\textbf{Feature Fusion}};
+                  \node[proc, below=of fuse] (xgb) {\textbf{XGBoost}\\[1pt]Classifiers};
+                  \node[amb, below=of xgb] (det) {\textbf{Ambiguity}\\[1pt]Detection Rules};
+                  \node[out, below=of det] (res) {\textbf{Final Result}\\[1pt](Emotion/Ambiguity)};
+
+                  \draw[arr] (in) -- (emb);
+                  \draw[arr] (emb) -| (tfidf);
+                  \draw[arr] (emb) -| (knn);
+                  \draw[arr] (emb) -- (fuse);
+                  \draw[arr] (knn) -- (tda);
+                  \draw[arr] (tfidf) |- (fuse);
+                  \draw[arr] (tda) |- (fuse);
+                  \draw[arr] (fuse) -- (xgb);
+                  \draw[arr] (xgb) -- (det);
+                  \draw[arr] (det) -- (res);
+                \end{tikzpicture}
+                }
+            \end{center}
+        \end{column}
+        
+        \begin{column}{0.55\textwidth}
+            \small
+            \textbf{1. Steps (Input to Output)}
+            \begin{itemize}
+                \item \textbf{Input:} Raw Reddit comment.
+                \item \textbf{Process:} Semantic encoding + Geometric analysis.
+                \item \textbf{Output:} Labelled emotion or Ambiguity flag.
+            \end{itemize}
+
+            \vspace{0.1cm}
+            \textbf{2. Tools \& Technology}
+            \begin{itemize}
+                \item \textbf{Language:} Python 3.10+
+                \item \textbf{Libraries:} Giotto-TDA, XGBoost, Transformers (Sentence-BERT).
+            \end{itemize}
+
+            \vspace{0.1cm}
+            \textbf{3. Working Principle}
+            \begin{enumerate}
+                \item Retrieve training-set neighbours for the input text.
+                \item Analyze neighborhood topology (persistent homology).
+                \item Use "Loop Count" and "Confidence Gap" to flag high-uncertainty inputs.
+            \end{enumerate}
+        \end{column}
+    \end{columns}
 \end{frame}
 
 % Slide 4
 \begin{frame}{Result and Analysis}
-    \input{slide4}
+    \textbf{Experimental Setup}
+    \begin{itemize}
+        \item \textbf{Dataset:} GoEmotions (43,410 training samples, 5,427 test).
+        \item \textbf{Evaluation:} Accuracy and Macro F1-score for 3-class mapping.
+    \end{itemize}
+
+    \vspace{0.2cm}
+    \textbf{Quantitative Results}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lccc}
+            \toprule
+            \textbf{Model Version} & \textbf{Accuracy} & \textbf{Macro F1} & \textbf{Ambiguity Flag} \\
+            \midrule
+            Embeddings only        & 0.57 & 0.52 & No \\
+            Embeddings + TF-IDF    & 0.58 & 0.54 & No \\
+            \textbf{Proposed (TDA)} & \textbf{0.59} & \textbf{0.56} & \textbf{Yes} \\
+            \bottomrule
+        \end{tabular}
+        \caption{Performance Comparison Table}
+    \end{table}
+
+    \vspace{0.1cm}
+    \textbf{Key Finding:}
+    TDA features provide independent signals that identify cases where the classifier is uncertain due to neighborhood geometry.
 \end{frame}
 
 % Slide 5
 \begin{frame}{Conclusion}
-    \input{slide5}
+    \textbf{Summary of Work}
+    \begin{itemize}
+        \item Developed a robust emotion detection pipeline for social media text.
+        \item Successfully integrated Topological Data Analysis (TDA) to capture geometric uncertainty.
+        \item Implemented a multi-rule ambiguity detection layer.
+    \end{itemize}
+
+    \vspace{0.4cm}
+    \textbf{Future Scope \& Improvements}
+    \begin{itemize}
+        \item \textbf{Dataset Expansion:} Develop a labeled ambiguity dataset.
+        \item \textbf{Optimization:} Explore approximate persistence computation.
+        \item \textbf{Multilingual:} Extend to global sentiment analysis.
+    \end{itemize}
 \end{frame}
 
 \end{document}

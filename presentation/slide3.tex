@@ -1,49 +1,66 @@
-\begin{frame}{Proposed System / Architecture}
-    \begin{columns}
-        \begin{column}{0.5\textwidth}
-            \textbf{System Steps}
-            \begin{enumerate}
-                \item \textbf{Input:} Raw Reddit text.
-                \item \textbf{Embedding:} Compute 768-dim BERT vector.
-                \item \textbf{Topology:} Find 24 neighbours; compute H1 loops.
-                \item \textbf{Fusion:} Merge Embedding, TF-IDF, and TDA.
-                \item \textbf{XGBoost:} Predict class probabilities.
-                \item \textbf{Detection:} Apply Ambiguity Rules.
-            \end{enumerate}
-            \vspace{0.2cm}
-            \textbf{Tools:} Python, Giotto-TDA, XGBoost, Transformers.
-        \end{column}
-        \begin{column}{0.5\textwidth}
-            \centering
-            \resizebox{!}{0.7\textheight}{
-            \begin{tikzpicture}[
-              font=\small,
-              box/.style={draw, rectangle, rounded corners=3pt, thick, align=center, minimum width=2.5cm, minimum height=0.7cm, fill=blue!8},
-              widebox/.style={draw, rectangle, rounded corners=3pt, thick, align=center, minimum width=3.5cm, minimum height=0.7cm, fill=teal!10},
-              arr/.style={-{Stealth[length=6pt]}, thick}
-            ]
-              \node[box, fill=green!12] (input) at (0,0) {\textbf{Input Text}};
-              \node[box] (embed) at (0,-1.2) {\textbf{Embedding}};
-              \node[box] (tfidf) at (-1.8,-2.5) {\textbf{TF-IDF}};
-              \node[box] (knn)   at (1.8,-2.5) {\textbf{K-NN (K=24)}};
-              \node[box] (vr)    at (1.8,-3.7) {\textbf{VR (TDA)}};
-              \node[widebox] (fusion) at (0,-5.0) {\textbf{Feature Fusion}};
-              \node[box, fill=purple!10] (xgb) at (0,-6.2) {\textbf{XGBoost}};
-              \node[box, fill=orange!12] (ambig) at (0,-7.4) {\textbf{Ambiguity Layer}};
-              \node[box, fill=red!8] (output) at (0,-8.6) {\textbf{Final Result}};
+\begin{frame}{Proposed System \& Architecture}
+    \begin{columns}[T]
+        \begin{column}{0.45\textwidth}
+            \textbf{System Design}
+            \begin{center}
+                \resizebox{!}{0.75\textheight}{
+                \begin{tikzpicture}[
+                  font=\tiny,
+                  node distance=0.6cm,
+                  box/.style={draw, rectangle, rounded corners=2pt, thick, align=center, width=2.2cm, fill=blue!5},
+                  proc/.style={draw, rectangle, rounded corners=2pt, thick, align=center, width=2.2cm, fill=green!5},
+                  amb/.style={draw, rectangle, rounded corners=2pt, thick, align=center, width=2.2cm, fill=orange!10},
+                  out/.style={draw, rectangle, rounded corners=2pt, thick, align=center, width=2.2cm, fill=red!5},
+                  arr/.style={-{Stealth[length=3pt]}, thick}
+                ]
+                  \node[box] (in) {\textbf{Input Text}};
+                  \node[proc, below=of in] (emb) {\textbf{Sentence-BERT}\\[1pt]Embedding};
+                  \node[proc, left=1.2cm of emb, yshift=-1cm] (tfidf) {\textbf{TF-IDF}\\[1pt]Features};
+                  \node[proc, right=1.2cm of emb, yshift=-0.5cm] (knn) {\textbf{K-Nearest}\\[1pt]Neighbours};
+                  \node[proc, below=of knn] (tda) {\textbf{Giotto-TDA}\\[1pt]Persistence};
+                  \node[box, below=2.5cm of emb] (fuse) {\textbf{Feature Fusion}};
+                  \node[proc, below=of fuse] (xgb) {\textbf{XGBoost}\\[1pt]Classifiers};
+                  \node[amb, below=of xgb] (det) {\textbf{Ambiguity}\\[1pt]Detection Rules};
+                  \node[out, below=of det] (res) {\textbf{Final Result}\\[1pt](Emotion/Ambiguous)};
 
-              \draw[arr] (input) -- (embed);
-              \draw[arr] (embed.west) -| (tfidf.north);
-              \draw[arr] (embed.east) -| (knn.north);
-              \draw[arr] (embed.south) -- (fusion.north);
-              \draw[arr] (knn) -- (vr);
-              \draw[arr] (tfidf.south) |- (fusion.west);
-              \draw[arr] (vr.south)    |- (fusion.east);
-              \draw[arr] (fusion) -- (xgb);
-              \draw[arr] (xgb) -- (ambig);
-              \draw[arr] (ambig) -- (output);
-            \end{tikzpicture}
-            }
+                  \draw[arr] (in) -- (emb);
+                  \draw[arr] (emb) -| (tfidf);
+                  \draw[arr] (emb) -| (knn);
+                  \draw[arr] (emb) -- (fuse);
+                  \draw[arr] (knn) -- (tda);
+                  \draw[arr] (tfidf) |- (fuse);
+                  \draw[arr] (tda) |- (fuse);
+                  \draw[arr] (fuse) -- (xgb);
+                  \draw[arr] (xgb) -- (det);
+                  \draw[arr] (det) -- (res);
+                \end{tikzpicture}
+                }
+            \end{center}
+        \end{column}
+        
+        \begin{column}{0.55\textwidth}
+            \small
+            \textbf{1. Steps (Input to Output)}
+            \begin{itemize}
+                \item \textbf{Input:} Raw Reddit comment.
+                \item \textbf{Process:} Semantic encoding + Geometric analysis.
+                \item \textbf{Output:} Labelled emotion or Ambiguity flag.
+            \end{itemize}
+
+            \vspace{0.2cm}
+            \textbf{2. Tools \& Technology}
+            \begin{itemize}
+                \item \textbf{Language:} Python 3.10+
+                \item \textbf{Libraries:} Giotto-TDA, XGBoost, Transformers (Sentence-BERT).
+            \end{itemize}
+
+            \vspace{0.2cm}
+            \textbf{3. Working Principle}
+            \begin{enumerate}
+                \item Retrieve training-set neighbours for the input text.
+                \item Analyze neighborhood topology (persistent homology).
+                \item Use "Loop Count" and "Confidence Gap" to flag high-uncertainty inputs.
+            \end{enumerate}
         \end{column}
     \end{columns}
 \end{frame}

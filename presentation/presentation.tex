@@ -1,8 +1,18 @@
 \documentclass[10pt]{beamer}
 
-% Theme selection
+% Modern theme configuration
 \usetheme{Madrid}
-\usecolortheme{whale}
+\usecolortheme{orchid} % Cleaner purple/blue look
+\usefonttheme{professionalfonts}
+
+% Custom Colors
+\definecolor{DeepNavy}{RGB}{0, 33, 71}
+\definecolor{EmeraldGreen}{RGB}{0, 155, 119}
+\setbeamercolor{palette primary}{bg=DeepNavy, fg=white}
+\setbeamercolor{palette secondary}{bg=DeepNavy!80, fg=white}
+\setbeamercolor{palette tertiary}{bg=DeepNavy!60, fg=white}
+\setbeamercolor{titlelike}{parent=palette primary}
+\setbeamercolor{structure}{fg=DeepNavy}
 
 % Packages
 \usepackage[utf8]{inputenc}
@@ -15,15 +25,15 @@
 
 % Metadata
 \title[Emotion Detection with TDA]{Emotion Detection from Social Media Posts \\ with Ambiguity Detection}
-\subtitle{Using Topological Data Analysis}
-\author{Arjeet Singh}
-\institute{IIIT Senapati, Manipur}
+\subtitle{Using Topological Data Analysis (TDA)}
+\author[Arjeet Singh]{Arjeet Singh}
+\institute[IIIT-S]{Indian Institute of Information Technology Senapati, Manipur}
 \date{April 2026}
 
 \begin{document}
 
 % Title Page
-\begin{frame}
+\begin{frame}[plain]
     \titlepage
 \end{frame}
 

@@ -1,0 +1,28 @@
+\begin{frame}{Result \& Analysis}
+    \textbf{Experimental Setup}
+    \begin{itemize}
+        \item \textbf{Dataset:} GoEmotions (43,410 training samples, 5,427 test).
+        \item \textbf{Evaluation:} Accuracy and Macro F1-score for 3-class mapping.
+    \end{itemize}
+
+    \vspace{0.2cm}
+    \textbf{Quantitative Results}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lccc}
+            \toprule
+            \textbf{Model Version} & \textbf{Accuracy} & \textbf{Macro F1} & \textbf{Ambiguity Flag} \\
+            \midrule
+            Embeddings only        & 0.57 & 0.52 & No \\
+            Embeddings + TF-IDF    & 0.58 & 0.54 & No \\
+            \textbf{Proposed (TDA)} & \textbf{0.59} & \textbf{0.56} & \textbf{Yes} \\
+            \bottomrule
+        \end{tabular}
+        \caption{Performance Comparison Table}
+    \end{table}
+
+    \vspace{0.1cm}
+    \textbf{Key Finding:}
+    TDA features provide independent signals that identify cases where the classifier is uncertain due to neighborhood geometry, even when class probabilities are similar.
+\end{frame}

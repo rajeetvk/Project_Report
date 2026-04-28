@@ -1,0 +1,49 @@
+\begin{frame}{Proposed System / Architecture}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \textbf{System Steps}
+            \begin{enumerate}
+                \item \textbf{Input:} Raw Reddit text.
+                \item \textbf{Embedding:} Compute 768-dim BERT vector.
+                \item \textbf{Topology:} Find 24 neighbours; compute H1 loops.
+                \item \textbf{Fusion:} Merge Embedding, TF-IDF, and TDA.
+                \item \textbf{XGBoost:} Predict class probabilities.
+                \item \textbf{Detection:} Apply Ambiguity Rules.
+            \end{enumerate}
+            \vspace{0.2cm}
+            \textbf{Tools:} Python, Giotto-TDA, XGBoost, Transformers.
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \centering
+            \resizebox{!}{0.7\textheight}{
+            \begin{tikzpicture}[
+              font=\small,
+              box/.style={draw, rectangle, rounded corners=3pt, thick, align=center, minimum width=2.5cm, minimum height=0.7cm, fill=blue!8},
+              widebox/.style={draw, rectangle, rounded corners=3pt, thick, align=center, minimum width=3.5cm, minimum height=0.7cm, fill=teal!10},
+              arr/.style={-{Stealth[length=6pt]}, thick}
+            ]
+              \node[box, fill=green!12] (input) at (0,0) {\textbf{Input Text}};
+              \node[box] (embed) at (0,-1.2) {\textbf{Embedding}};
+              \node[box] (tfidf) at (-1.8,-2.5) {\textbf{TF-IDF}};
+              \node[box] (knn)   at (1.8,-2.5) {\textbf{K-NN (K=24)}};
+              \node[box] (vr)    at (1.8,-3.7) {\textbf{VR (TDA)}};
+              \node[widebox] (fusion) at (0,-5.0) {\textbf{Feature Fusion}};
+              \node[box, fill=purple!10] (xgb) at (0,-6.2) {\textbf{XGBoost}};
+              \node[box, fill=orange!12] (ambig) at (0,-7.4) {\textbf{Ambiguity Layer}};
+              \node[box, fill=red!8] (output) at (0,-8.6) {\textbf{Final Result}};
+
+              \draw[arr] (input) -- (embed);
+              \draw[arr] (embed.west) -| (tfidf.north);
+              \draw[arr] (embed.east) -| (knn.north);
+              \draw[arr] (embed.south) -- (fusion.north);
+              \draw[arr] (knn) -- (vr);
+              \draw[arr] (tfidf.south) |- (fusion.west);
+              \draw[arr] (vr.south)    |- (fusion.east);
+              \draw[arr] (fusion) -- (xgb);
+              \draw[arr] (xgb) -- (ambig);
+              \draw[arr] (ambig) -- (output);
+            \end{tikzpicture}
+            }
+        \end{column}
+    \end{columns}
+\end{frame}

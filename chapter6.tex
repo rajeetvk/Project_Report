@@ -450,33 +450,23 @@ persistence) is the bottleneck at inference time as well.
 
 \section{Limitations}
 
-The known limitations of the current system are:
+The known limitations of the current system from an experimental and technical perspective are:
 
 \begin{itemize}
-    \item \textbf{Social Ambiguity Blind Spots:} The system cannot detect social ambiguity
-    that is not geometrically visible in the embedding space. ``I am fine'' is a well-known
-    socially ambiguous phrase, but it does not appear ambiguous in the geometric sense
-    because training data biases its neighbourhood toward clearly Positive samples.
+    \item \textbf{Threshold Calibration:} The thresholds for ambiguity detection (14, 10, 0.30,
+    and 0.10) were established through manual observation and sensitivity analysis rather than
+    systematic optimization. In the absence of a large-scale, human-annotated dataset for
+    ambiguity, these thresholds remain experimental and may require further tuning for different
+    domains.
 
-    \item \textbf{Slang and Informal Language:} The system struggles with slang,
-    abbreviations, and informal language that is not well-represented in the training data.
-    Words like ``yolo'', ``fomo'', ``lol'', and ``idk'' carry emotional meaning but the
-    embedding model may not place them accurately because such terms are underrepresented
-    in the model's training data. As a result, unusual or newly emerging slang expressions
-    may lead to incorrect or ambiguous predictions. This highlights a limitation of
-    data-driven models: understanding of language is restricted to patterns seen during
-    training. Handling such language would require additional preprocessing using slang
-    dictionaries or domain-specific training data.
+    \item \textbf{Inference Performance:} The requirement to compute Vietoris-Rips persistence and
+    nearest-neighbour retrieval for every input at inference time introduces a computational
+    bottleneck. While acceptable for interactive use, this overhead makes the current system
+    less suitable for high-throughput, real-time stream processing compared to standard
+    neural network classifiers.
 
-    \item \textbf{Threshold Calibration:} The ambiguity thresholds were set manually based
-    on observation and experimentation. There is no labelled dataset of ``ambiguous social
-    media posts'' that could be used for proper threshold calibration.
-
-    \item \textbf{Language Constraint:} The system works only on English text. It was
-    trained on Reddit comments and may not generalize well to other social media platforms
-    with different writing styles.
-
-    \item \textbf{Inference Bottleneck:} Inference is slower than a standard classifier because
-    of the live topology computation. For large-scale deployment, this would need to be
-    optimized.
+    \item \textbf{Dataset-Specific Geometry:} The topological features are inherently tied to the
+    geometric distribution of the GoEmotions training set. If the system is used on text from a
+    radically different domain (such as technical manuals or medical reports), the semantic
+    neighbourhoods may not be dense enough to produce meaningful topological signals.
 \end{itemize}

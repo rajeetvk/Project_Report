@@ -48,28 +48,28 @@ deep learning systems do not have.
 
 \section{Limitations}
 
-The system has the following known limitations:
+The current system has several conceptual and real-world limitations that go beyond technical implementation:
 
 \begin{itemize}
-    \item \textbf{Threshold Calibration:} The thresholds for ambiguity detection (14, 10, 0.30,
-    0.10) were set manually based on experimentation. Without a labelled ambiguity dataset,
-    these cannot be calibrated systematically.
+    \item \textbf{Social Ambiguity Blind Spots:} The system is designed to detect semantic
+    ambiguity based on geometric clustering. However, it cannot detect ``social'' ambiguity
+    where the text is semantically clear but the intent is hidden or sarcastic. For example, the
+    phrase ``I am fine'' is socially complex and often used to mask negative emotions, but since
+    it appears geometrically near clearly Positive training samples, the system cannot flag it as
+    ambiguous without additional contextual cues.
 
-    \item \textbf{Social Ambiguity Blind Spots:} The system cannot detect social ambiguity
-    that is not visible in the embedding space. ``I am fine'' is socially complex but does
-    not appear geometrically ambiguous because the training data biases its neighbourhood
-    toward clearly Positive samples.
+    \item \textbf{Slang and Informal Language:} The system's understanding of emotion is tied to
+    the semantic patterns captured by the base embedding model. Rapidly evolving internet
+    slang, highly informal abbreviations (e.g., ``yolo'', ``fomo''), or domain-specific jargon
+    may not be correctly represented in the high-dimensional space if they were underrepresented
+    during the model's pre-training. This limits the system's effectiveness on highly informal
+    social media platforms.
 
-    \item \textbf{Slang and Informal Language:} The system struggles with slang and informal
-    abbreviations. Words like ``yolo'', ``fomo'', ``lol'', and ``idk'' carry emotional meaning
-    but may not be well-represented in the training data. The embedding model may not
-    place such terms accurately, leading to incorrect or ambiguous predictions.
-
-    \item \textbf{Inference Bottleneck:} Inference is slower than a standard classifier because
-    of the live topology computation. For large-scale systems, this would need to be
-    optimized.
-
-    \item \textbf{Language Constraint:} The system works only on English text.
+    \item \textbf{Linguistic and Cultural Constraints:} The current system is exclusively
+    designed for and evaluated on English text. The topological structures of emotional
+    expression likely vary across different languages and cultural contexts. Applying this
+    topology-based approach to low-resource languages or multilingual datasets would require
+    significant conceptual adaptation and a different set of foundational embeddings.
 \end{itemize}
 
 \section{Future Work}

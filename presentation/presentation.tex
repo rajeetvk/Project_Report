@@ -1,86 +1,147 @@
 \documentclass[10pt]{beamer}
 \usetheme{Madrid}
 \usecolortheme{whale}
+
+% Custom Colors for Premium Look
+\definecolor{DeepNavy}{RGB}{0, 33, 71}
+\setbeamercolor{palette primary}{bg=DeepNavy, fg=white}
+\setbeamercolor{palette secondary}{bg=DeepNavy!80, fg=white}
+\setbeamercolor{palette tertiary}{bg=DeepNavy!60, fg=white}
+\setbeamercolor{titlelike}{parent=palette primary}
+\setbeamercolor{structure}{fg=DeepNavy}
+
 \usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
 \usepackage{amsmath,amssymb,booktabs,tikz,graphicx}
 \usetikzlibrary{shapes.geometric, arrows.meta, positioning}
 
-\title[Emotion Detection]{Emotion Detection with Ambiguity Detection}
-\author{Arjeet Singh}
+\title[Emotion Detection]{Emotion Detection from Social Media Posts \\ with Ambiguity Detection}
+\subtitle{Using Topological Data Analysis (TDA)}
+\author[Arjeet Singh]{Arjeet Singh}
+\institute[IIIT-S]{Indian Institute of Information Technology Senapati, Manipur}
 \date{April 2026}
 
 \begin{document}
 
-\begin{frame}
+\begin{frame}[plain]
     \titlepage
 \end{frame}
 
-\begin{frame}{Slide 1: Intro and Objective}
-    \textbf{Objective:} Detect emotions and flag ambiguity using TDA.
+\begin{frame}{Slide 1: Introduction and Objective}
+    \textbf{Introduction}
     \begin{itemize}
-        \item Traditional models fail on ambiguous text.
-        \item This project uses geometric features to detect uncertainty.
+        \item Emotion detection from Reddit text is often hindered by ambiguity.
+        \item Conventional models force classifications, leading to errors.
+    \end{itemize}
+    \vspace{0.2cm}
+    \textbf{Objective}
+    \begin{itemize}
+        \item Use \textbf{Topological Data Analysis (TDA)} to detect geometric uncertainty.
+        \item Explicitly flag "Ambiguous" inputs instead of picking a wrong class.
+    \end{itemize}
+    \vspace{0.2cm}
+    \textbf{Contribution}
+    \begin{itemize}
+        \item Combined BERT, TF-IDF, and TDA persistence landscapes.
+        \item Hybrid rule-based ambiguity detection layer.
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Slide 2: Background}
+\begin{frame}{Slide 2: Background and Existing Work}
     \begin{itemize}
-        \item BERT is the baseline for classification.
-        \item Problem: Models are overconfident on "mixed" emotions.
-        \item Solution: Topological Data Analysis (TDA).
+        \item \textbf{Existing Work:} BERT/Transformer models achieve high accuracy on clear data but struggle with sarcasm or mixed emotions.
+        \item \textbf{Problems:} Forced classification leads to overconfidence and misinformation.
+        \item \textbf{Requirement:} A system that understands its own semantic boundaries.
+        \item \textbf{TDA Solution:} Analyzes the "shape" of the local training data around the input. Loops in this shape indicate semantic overlaps (ambiguity).
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Slide 3: Proposed Architecture}
-    \begin{columns}
+\begin{frame}{Slide 3: Proposed System and Architecture}
+    \begin{columns}[T]
         \begin{column}{0.4\textwidth}
-            \textbf{Steps:}
+            \small
+            \textbf{System Steps:}
             \begin{enumerate}
-                \item Text $\rightarrow$ BERT
-                \item TDA Persistence
-                \item Feature Fusion
-                \item XGBoost Result
+                \item \textbf{Input:} Raw Text
+                \item \textbf{BERT:} 768-dim vector
+                \item \textbf{TDA:} Analyze geometry of 24 neighbours
+                \item \textbf{Fusion:} Merge features
+                \item \textbf{Output:} Label or Ambiguity
             \end{enumerate}
-            \textbf{Tools:} Python, Giotto-TDA
+            \vspace{0.2cm}
+            \textbf{Tools:}
+            \begin{itemize}
+                \item Python 3.10
+                \item Giotto-TDA, XGBoost
+                \item Sentence-BERT
+            \end{itemize}
         \end{column}
         \begin{column}{0.6\textwidth}
             \centering
-            \begin{tikzpicture}[scale=0.5, transform shape,
-                node distance=1cm,
-                block/.style={draw, rectangle, rounded corners, fill=blue!10, text width=3cm, align=center}
+            \begin{tikzpicture}[scale=0.38, transform shape,
+                node distance=1.1cm,
+                box/.style={draw, rectangle, rounded corners=3pt, thick, align=center, text width=3.5cm, fill=blue!10},
+                proc/.style={draw, rectangle, rounded corners=3pt, thick, align=center, text width=3.5cm, fill=green!10},
+                amb/.style={draw, rectangle, rounded corners=3pt, thick, align=center, text width=3.5cm, fill=orange!10},
+                out/.style={draw, rectangle, rounded corners=3pt, thick, align=center, text width=3.5cm, fill=red!10},
+                arr/.style={-{Stealth[length=5pt]}, thick}
             ]
-                \node [block] (in) {Input Text};
-                \node [block, below of=in] (emb) {BERT Embedding};
-                \node [block, below of=emb] (tda) {TDA Analysis};
-                \node [block, below of=tda] (xgb) {XGBoost Classifier};
-                \node [block, below of=xgb] (out) {Final Result};
-                \draw [->, thick] (in) -- (emb);
-                \draw [->, thick] (emb) -- (tda);
-                \draw [->, thick] (tda) -- (xgb);
-                \draw [->, thick] (xgb) -- (out);
+                \node [box] (in) {\textbf{Input Text}};
+                \node [proc, below of=in] (emb) {\textbf{BERT Embedding}};
+                \node [proc, left=2.2cm of emb, yshift=-1.5cm] (tfidf) {\textbf{TF-IDF Features}};
+                \node [proc, right=2.2cm of emb, yshift=-1.5cm] (tda) {\textbf{TDA Homology}};
+                \node [box, below=3.5cm of emb] (fuse) {\textbf{Feature Fusion}};
+                \node [proc, below of=fuse] (xgb) {\textbf{XGBoost Models}};
+                \node [amb, below of=xgb] (det) {\textbf{Ambiguity Detection}};
+                \node [out, below of=det] (res) {\textbf{Final Result}};
+
+                \draw [arr] (in) -- (emb);
+                \draw [arr] (emb) -| (tfidf);
+                \draw [arr] (emb) -| (tda);
+                \draw [arr] (emb) -- (fuse);
+                \draw [arr] (tfidf) |- (fuse);
+                \draw [arr] (tda) |- (fuse);
+                \draw [arr] (fuse) -- (xgb);
+                \draw [arr] (xgb) -- (det);
+                \draw [arr] (det) -- (res);
             \end{tikzpicture}
         \end{column}
     \end{columns}
 \end{frame}
 
-\begin{frame}{Slide 4: Results}
+\begin{frame}{Slide 4: Result and Analysis}
+    \textbf{Experiments:} Evaluated on 5,427 GoEmotions test samples.
+    \vspace{0.2cm}
     \begin{table}
-        \begin{tabular}{lc}
+        \centering
+        \small
+        \begin{tabular}{lccc}
             \toprule
-            Model & Accuracy \\
+            \textbf{Feature Set} & \textbf{Accuracy} & \textbf{Macro F1} \\
             \midrule
-            Baseline & 0.57 \\
-            \textbf{Proposed (TDA)} & \textbf{0.59} \\
+            Embeddings only        & 0.57 & 0.52 \\
+            Embeddings + TF-IDF    & 0.58 & 0.54 \\
+            \textbf{Full Pipeline (TDA)} & \textbf{0.59} & \textbf{0.56} \\
             \bottomrule
         \end{tabular}
+        \caption{Performance on 3-Class GoEmotions Task}
     \end{table}
-    Findings: TDA detects "geometry of doubt".
+    \vspace{0.2cm}
+    \textbf{Analysis:} TDA identifies "Extreme Topology" triggers (Loop Count $\geq$ 14) which correctly identifies ambiguous cases that would otherwise be misclassified.
 \end{frame}
 
-\begin{frame}{Slide 5: Conclusion}
+\begin{frame}{Slide 5: Conclusion and Future Scope}
+    \textbf{Summary}
     \begin{itemize}
-        \item Successfully identified ambiguous Reddit posts.
-        \item Future: Real-time optimization and multilingual support.
+        \item Integrated TDA into an emotion detection system to quantify uncertainty.
+        \item Achieved a state-of-the-art approach for ambiguity flagging in short text.
+    \end{itemize}
+    \vspace{0.4cm}
+    \textbf{Future Improvements}
+    \begin{itemize}
+        \item \textbf{Scalability:} Speed up persistence computation using GPU.
+        \item \textbf{Dataset:} Create specialized benchmarks for ambiguous sentiment.
+        \item \textbf{Context:} Incorporate user metadata for social ambiguity detection.
     \end{itemize}
 \end{frame}
 

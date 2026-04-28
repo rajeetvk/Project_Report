@@ -1,28 +1,26 @@
-\begin{frame}{Background / Existing Work}
-    \textbf{Existing Work}
-    \begin{itemize}
-        \item BERT and Sentence-BERT models are state-of-the-art for emotion classification.
-        \item Datasets like GoEmotions provide fine-grained labels (28 categories).
-    \end{itemize}
+\textbf{Existing Work}
+\begin{itemize}
+    \item BERT and Sentence-BERT models are state-of-the-art for emotion classification.
+    \item Datasets like GoEmotions provide fine-grained labels (28 categories).
+\end{itemize}
 
-    \vspace{0.2cm}
-    \textbf{Problems with Existing Work}
-    \begin{itemize}
-        \item \textbf{Forced Choice:} Models must pick a class even for nonsensical or mixed-emotion text.
-        \item \textbf{Overconfidence:} Neural networks are often overconfident on samples they haven't seen.
-    \end{itemize}
+\vspace{0.2cm}
+\textbf{Problems with Existing Work}
+\begin{itemize}
+    \item \textbf{Forced Choice:} Models must pick a class even for nonsensical or mixed-emotion text.
+    \item \textbf{Overconfidence:} Neural networks are often overconfident on samples they haven't seen.
+\end{itemize}
 
-    \vspace{0.2cm}
-    \textbf{Why This Project is Needed}
-    \begin{itemize}
-        \item Real-world data is messy; sarcasm and semantic overlaps create genuine ambiguity.
-        \item Identifying "I don't know" is as important as a correct classification.
-    \end{itemize}
+\vspace{0.2cm}
+\textbf{Why This Project is Needed}
+\begin{itemize}
+    \item Real-world data is messy; sarcasm and semantic overlaps create genuine ambiguity.
+    \item Identifying "I don't know" is as important as a correct classification.
+\end{itemize}
 
-    \vspace{0.2cm}
-    \textbf{The Solution}
-    \begin{itemize}
-        \item TDA analyzes the \textbf{geometry} of the training neighborhood.
-        \item Complex shapes (loops) in the neighborhood signal high uncertainty.
-    \end{itemize}
-\end{frame}
+\vspace{0.2cm}
+\textbf{The Solution}
+\begin{itemize}
+    \item TDA analyzes the \textbf{geometry} of the training neighborhood.
+    \item Complex shapes (loops) in the neighborhood signal high uncertainty.
+\end{itemize}

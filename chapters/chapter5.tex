@@ -1,4 +1,5 @@
 \chapter{Implementation}
+\sloppy
 
 \section{Overview}
 
@@ -11,8 +12,8 @@ handled, the inference and ambiguity detection logic, and how the model is saved
 The system is implemented in Python 3.10. The main libraries used are:
 
 \begin{itemize}
-    \item \texttt{sentence-transformers}~\cite{sentence_bert}: For computing semantic embeddings using
-    \texttt{all-mpnet-base-v2}.
+    \item \texttt{sentence-\allowbreak trans\-for\-mers}~\cite{sentence_bert}: For computing semantic embeddings using
+    \texttt{all-mpnet-\allowbreak base-v2}.
     \item \texttt{scikit-learn}: For TF-IDF vectorization, nearest-neighbour indexing, and
     evaluation metrics.
     \item \texttt{xgboost}: For the classification models~\cite{xgboost_emotion}.
@@ -30,7 +31,7 @@ The rest of the pipeline (TDA computation, XGBoost training) runs on CPU. Infere
 entirely on CPU.
 
 The code is organized into two main files: \texttt{tdanew4.py} for training and evaluation, and
-\texttt{ambiguity.py} for interactive inference.
+\texttt{ambiguity.\allowbreak py} for interactive inference.
 
 \section{Dataset Preparation}
 
@@ -39,8 +40,8 @@ The GoEmotions dataset (simplified version) is used~\cite{goemotions}. It was lo
 connection after the first download. The annotation methodologies used in this dataset have
 been subject to experimental analysis in recent literature~\cite{emotion_annotation}.
 
-The dataset has 43,410 training samples and 5,427 test samples. Each sample is a Reddit
-comment with one or more labels from 28 emotion categories.
+The dataset has 43,410 training samples and 5,427 test samples. Each sample is a textual
+sample with one or more labels from 28 emotion categories.
 
 The 28 emotion categories are mapped to three classes as shown in \textbf{Table~\ref{tab:label_map}}.
 
@@ -63,7 +64,7 @@ As shown in \textbf{Table~\ref{tab:label_map}}, the original GoEmotions labels a
 broad categories to simplify the classification task while preserving emotional valence.
 
 Each sample can belong to more than one class because the original GoEmotions labels are
-multi-label. A comment labelled as both ``joy'' and ``admiration'' would be mapped to Positive.
+multi-label. A sample labelled as both ``joy'' and ``admiration'' would be mapped to Positive.
 The labels are converted to a binary vector of length 3, where each position indicates membership
 in that class.
 

@@ -1,14 +1,15 @@
 \chapter{Conclusion and Future Work}
+\sloppy
 
 \section{Summary}
 
-This project built an emotion detection system for social media text that does something most
+This project built an emotion detection system for formal text that does something most
 existing systems do not: it knows when not to answer. Instead of always returning a confident
 label, the system can output Ambiguous when the input text is genuinely unclear or sits in a
 boundary region between emotion classes.
 
 The system combines three types of features. Semantic embeddings from the
-\texttt{all-mpnet-base-v2} model capture the meaning of the text. TF-IDF features capture the
+\texttt{all-mpnet-\allowbreak base-v2} model capture the meaning of the text. TF-IDF features capture the
 specific words and phrases present. Topological features from Vietoris-Rips persistent homology
 capture the geometric structure of the neighbourhood around the input in the embedding space.
 
@@ -51,19 +52,19 @@ deep learning systems do not have.
 The current system has several conceptual and real-world limitations that go beyond technical implementation:
 
 \begin{itemize}
-    \item \textbf{Social Ambiguity Blind Spots:} The system is designed to detect semantic
-    ambiguity based on geometric clustering. However, it cannot detect ``social'' ambiguity
-    where the text is semantically clear but the intent is hidden or sarcastic. For example, the
-    phrase ``I am fine'' is socially complex and often used to mask negative emotions, but since
+    \item \textbf{Contextual Ambiguity Blind Spots:} The system is designed to detect semantic
+    ambiguity based on geometric clustering. However, it cannot detect ``contextual'' ambiguity
+    where the text is semantically clear but the underlying nuance or tone is hidden. For example, the
+    phrase ``I am fine'' is contextually complex and often used to mask negative emotions, but since
     it appears geometrically near clearly Positive training samples, the system cannot flag it as
     ambiguous without additional contextual cues.
 
-    \item \textbf{Slang and Informal Language:} The system's understanding of emotion is tied to
-    the semantic patterns captured by the base embedding model. Rapidly evolving internet
-    slang, highly informal abbreviations (e.g., ``yolo'', ``fomo''), or domain-specific jargon
+    \item \textbf{Complex Terminology and Formal Nuance:} The system's understanding of emotion is tied to
+    the semantic patterns captured by the base embedding model. Specialized vocabulary,
+    highly technical abbreviations, or domain-specific jargon
     may not be correctly represented in the high-dimensional space if they were underrepresented
-    during the model's pre-training. This limits the system's effectiveness on highly informal
-    social media platforms.
+    during the model's pre-training. This limits the system's effectiveness on highly specialized
+    formal textual environments.
 
     \item \textbf{Linguistic and Cultural Constraints:} The current system is exclusively
     designed for and evaluated on English text. The topological structures of emotional
@@ -78,7 +79,7 @@ There are several directions where this work can be extended:
 
 \begin{itemize}
     \item \textbf{Labelled Ambiguity Dataset:} The most important improvement would be
-    creating a labelled ambiguity dataset. If a set of social media posts were annotated by
+    creating a labelled ambiguity dataset. If a set of textual samples were annotated by
     humans for whether they are genuinely ambiguous, the ambiguity thresholds could be
     calibrated properly and the system's performance on ambiguity detection could be
     measured numerically.
@@ -93,13 +94,13 @@ There are several directions where this work can be extended:
     challenging but more useful task. The GoEmotions dataset supports 28 classes, and a
     system that can detect ambiguity at this level would be much more informative.
 
-    \item \textbf{Sarcasm and Irony Detection:} Adding a dedicated sarcasm and irony
-    detection module would address many of the cases where social ambiguity is not
-    captured by the topological signal. Sarcasm in particular is common in Reddit comments
+    \item \textbf{Nuance and Irony Detection:} Adding a dedicated nuance and irony
+    detection module would address many of the cases where contextual ambiguity is not
+    captured by the topological signal. Nuance in particular is common in formal textual data
     and is a major source of error in sentiment analysis systems.
 
     \item \textbf{Multilingual Support:} Supporting multiple languages through multilingual
-    embeddings would make the system applicable to a much wider range of social media
+    embeddings would make the system applicable to a much wider range of textual
     content.
 
     \item \textbf{User Interface:} Finally, a web interface would make the system accessible

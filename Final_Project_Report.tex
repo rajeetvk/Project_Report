@@ -11,11 +11,13 @@
 \usepackage{array}
 \usepackage{longtable}
 \usepackage{graphicx}
+\graphicspath{{images/}}
 \usepackage{caption}
 \captionsetup{labelfont=bf}
 \usepackage{subcaption}
 \usepackage{float}
 \usepackage{xcolor}
+\definecolor{DeepNavy}{RGB}{0, 33, 71}
 \usepackage{enumitem}
 \usepackage{fancyhdr}
 \usepackage{algorithm}
@@ -113,12 +115,14 @@
 }
 
 
-\usepackage[hidelinks, unicode, breaklinks, bookmarks=true, plainpages=false, pdfpagelabels]{hyperref}
+\usepackage[colorlinks=true, linkcolor=DeepNavy, urlcolor=DeepNavy, citecolor=DeepNavy, breaklinks, bookmarks=true, plainpages=false, pdfpagelabels]{hyperref}
 \usepackage{bookmark}
 \hypersetup{
-    linktoc=all,
-    pdftitle={Emotion Detection from Social Media Posts with Ambiguity Detection},
-    pdfauthor={Arjeet Singh}
+    pdfstartview={FitH},
+    pdftitle={Emotion Detection from Textual Data with Ambiguity Detection},
+    pdfauthor={Arjeet Singh},
+    pdfsubject={Project Report},
+    pdfkeywords={Emotion Detection, TDA, NLP, Ambiguity Detection}
 }
 
 \begin{document}
@@ -130,7 +134,7 @@
 \centering
 \vspace*{1cm}
 
-{\Huge\bfseries Emotion Detection from Social Media Posts\\[0.4em]
+{\Huge\bfseries Emotion Detection from Textual Data\\[0.4em]
 with Ambiguity Detection\par}
 
 \vspace{1.5cm}
@@ -155,7 +159,7 @@ with Ambiguity Detection\par}
 \vspace{1.2cm}
 {\normalsize\bfseries DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING\\
 INDIAN INSTITUTE OF INFORMATION TECHNOLOGY SENAPATI, MANIPUR\\
-APRIL 2026\par}
+30th APRIL 2026\par}
 \end{titlepage}
 
 %% ===========================
@@ -165,10 +169,10 @@ APRIL 2026\par}
 \setcounter{page}{1}
 \pagestyle{plain}
 
-\include{declaration}
-\include{certificate}
-\include{abstract}
-\include{acknowledgement}
+\include{sections/declaration}
+\include{sections/certificate}
+\include{sections/abstract}
+\include{sections/acknowledgement}
 
 \tableofcontents
 \clearpage
@@ -184,19 +188,19 @@ APRIL 2026\par}
 \setcounter{page}{1}
 \pagestyle{fancy}
 
-\include{chapter1}
-\include{chapter2}
-\include{chapter3}
-\include{chapter4}
-\include{chapter5}
-\include{chapter6}
-\include{chapter7}
+\include{chapters/chapter1}
+\include{chapters/chapter2}
+\include{chapters/chapter3}
+\include{chapters/chapter4}
+\include{chapters/chapter5}
+\include{chapters/chapter6}
+\include{chapters/chapter7}
 
 %% ===========================
 %% BIBLIOGRAPHY
 %% ===========================
 \cleardoublepage
 \addcontentsline{toc}{chapter}{Bibliography}
-\include{references}
+\include{sections/references}
 
 \end{document}

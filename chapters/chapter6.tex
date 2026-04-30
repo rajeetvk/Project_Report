@@ -1,4 +1,5 @@
 \chapter{Results and Evaluation}
+\sloppy
 
 \section{Overview}
 
@@ -55,8 +56,7 @@ An overall accuracy of 0.59 may look low at first. However, this number needs to
 in the context of the dataset and the purpose of this project.
 
 The GoEmotions dataset is known to be difficult. It is highly imbalanced, with the Neutral class
-having about three times more samples than Positive and five times more than Negative. The
-comments come from Reddit, which has a lot of sarcasm, slang, and ambiguous language. Even
+having about three times more samples than Positive and five times more than Negative. The textual samples come from formal sources, which contain nuanced and inherently ambiguous language. Even
 human annotators often disagree on the correct label.
 
 Looking at the per-class results, the \textsc{neutral} class has very high precision (0.86),
@@ -334,7 +334,7 @@ fire. The loop count of 3 is well below both topology thresholds. So all three a
 fail to trigger, and the system returns \textsc{positive}.
 
 This behavior is a direct result of how the training data is distributed. In the GoEmotions
-Reddit corpus, the phrase ``I am fine'' and similar phrasings appear predominantly in
+GoEmotions corpus, the phrase ``I am fine'' and similar phrasings appear predominantly in
 Positive-labeled samples. The nearest neighbours of this phrase in the embedding space are
 mostly Positive, which is why the topology is clean and the classifier is confident.
 
@@ -419,6 +419,7 @@ on the test examples.
 \centering
 \caption{Effect of Threshold Configurations on Ambiguity Rate}
 \label{tab:thresh}
+\resizebox{\textwidth}{!}{
 \begin{tabular}{ccccl}
 \toprule
 \textbf{Loop Extreme} & \textbf{Loop Moderate} & \textbf{Gap Threshold} & \textbf{Ambiguity Rate} & \textbf{Notes} \\
@@ -430,6 +431,7 @@ on the test examples.
 18 & 13 & 0.30 & $\sim$12\% & Too conservative \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 As indicated in \textbf{Table~\ref{tab:thresh}}, the current thresholds of 14 and 10 were chosen because

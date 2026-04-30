@@ -13,14 +13,14 @@ Sentiment analysis is the task of identifying whether a piece of text expresses 
 negative, or neutral opinion. It is one of the oldest and most studied problems in natural language
 processing.
 
-Lexicon-based methods like VADER assign scores to individual words and then combine those scores to get an overall sentiment. This is a well-known approach for early systems. These were designed specifically for social media text and handled punctuation, capitalization, and emoticons as signals of sentiment intensity.
+Lexicon-based methods like VADER assign scores to individual words and then combine those scores to get an overall sentiment. This is a well-known approach for early systems. These were designed specifically for textual data and handled punctuation, capitalization, and emoticons as signals of sentiment intensity.
 Such systems are fast and work reasonably well for clear, unambiguous text. However, they
 often fail on sarcasm and do not have any mechanism to say when they are unsure.
 
 Machine learning approaches improved on this. Systems based on Naive Bayes, Support Vector
 Machines (SVM), and logistic regression used bag-of-words representations. These models
 could learn from examples and generalize beyond a fixed vocabulary. They performed better on
-benchmark datasets but still struggled with informal language, negations, and short posts where
+benchmark datasets but still struggled with complex language, negations, and short text segments where
 context is limited.
 
 The deep learning era brought significant improvements. Previous models applied convolutional
@@ -45,7 +45,7 @@ is harder than binary sentiment classification because the boundaries between em
 sharp.
 
 The GoEmotions dataset~\cite{goemotions} is one of the most important resources for this task. It was
-released by Google and contains around 58,000 Reddit comments labelled by crowd workers
+released by Google and contains around 58,000 textual samples labelled by crowd workers
 with 28 emotion categories. Each comment can have multiple labels. The dataset is publicly
 available and has been widely used in research.
 
@@ -64,10 +64,10 @@ surprised, some as slightly negative. The final label is determined by majority 
 this uncertainty. Models trained on such data are essentially learning to predict the most common
 human interpretation, not the correct one, and there may not be a single correct one.
 
-The third problem is the presence of \textbf{informal language}. Reddit comments contain slang,
-abbreviations, and expressions that are not well-represented in standard training data. Words
-like ``yolo'', ``fomo'', ``lol'', and ``idk'' carry emotional meaning but are often handled poorly
-by models trained on more formal text. The embedding models used to represent these words
+The third problem is the presence of \textbf{complex language}. Formal textual samples can contain nuanced
+vocabulary, abbreviations, and expressions that are not well-represented in standard training data. Even in 
+formal contexts, words and phrases carry emotional meaning that is often handled poorly
+by models trained on generic text. The embedding models used to represent these words
 may not give them accurate positions in the semantic space.
 
 Several BERT-based systems have been published on GoEmotions~\cite{bert_emotion, bert_model}. Most report accuracy in the
@@ -150,7 +150,7 @@ fresh persistence diagram for the 24 nearest neighbours of each new input. This 
 captures whether the input is sitting in a clean region of the space or in a boundary region
 between clusters. The number of H1 loops in this local diagram is used as a signal of ambiguity.
 
-This approach has not been used for ambiguity detection in social media text, to the best
+This approach has not been used for ambiguity detection in formal text, to the best
 knowledge of the author. It is the main technical contribution of this project.
 
 \section{Sentence Embeddings}
@@ -173,7 +173,7 @@ implementation chapter.
 
 Despite the strong performance of transformer-based models on the GoEmotions dataset, existing approaches lack the ability to explicitly detect ambiguity in emotional expression. Most models are designed to assign a fixed label, even when the input contains mixed, unclear, or conflicting emotional signals.
 
-This limitation is significant because real-world social media text often contains subtle, implicit, or ambiguous emotions that cannot be accurately represented by a single label.
+This limitation is significant because real-world formal text often contains subtle, implicit, or ambiguous emotions that cannot be accurately represented by a single label.
 
 Furthermore, while embedding-based methods capture semantic similarity, they do not analyze the structural complexity of the data distribution in the embedding space.
 

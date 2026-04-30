@@ -2,11 +2,11 @@
 
 \section{Introduction}
 
-Social media platforms have fundamentally altered the landscape of human communication. Platforms like Twitter, Reddit, and Instagram have become spaces where individuals share thoughts, sentiments, and reactions in real time. Daily, millions of textual updates are generated across these networks, ranging from clear expressions of joy or sadness to complex, sarcastic, or inherently ambiguous discourse.
+Digital communication platforms have fundamentally altered the landscape of human interaction. Various online forums and textual corpora have become spaces where individuals share thoughts, sentiments, and reactions in real time. Daily, millions of textual updates are generated across these networks, ranging from clear expressions of joy or sadness to complex, sarcastic, or inherently ambiguous discourse.
 
-Analyzing the emotional content of social media discourse is valuable for diverse applications. Corporations seek to monitor consumer sentiment regarding products, while researchers investigate mental health trends through the analysis of online expressions. Consequently, there is a critical need for automated systems capable of processing vast textual corpora to identify underlying emotional states.
+Analyzing the emotional content of textual discourse is valuable for diverse applications. Corporations seek to monitor consumer sentiment regarding products, while researchers investigate mental health trends through the analysis of digital expressions. Consequently, there is a critical need for automated systems capable of processing vast textual corpora to identify underlying emotional states.
 
-This project proposes a framework for the classification of social media text into four distinct emotional categories: Positive, Negative, Neutral, and Ambiguous. The inclusion of the latter category distinguishes this approach from conventional systems that lack explicit uncertainty handling.
+This project proposes a framework for the classification of textual data into four distinct emotional categories: Positive, Negative, Neutral, and Ambiguous. The inclusion of the latter category distinguishes this approach from conventional systems that lack explicit uncertainty handling.
 
 \section{Background and Motivation}
 
@@ -18,7 +18,7 @@ This research is founded on the principle that uncertainty is a valid and inform
 
 A second primary motivation for this research is the utilization of geometric data structures to quantify ambiguity. When text is converted into a vector representation using a language model, semantically similar inputs are mapped to proximal regions in the embedding space. This project investigates the geometric structure of the neighbourhood around each input in the embedding space. If the neighbourhood is well-defined and homogenous, the input is likely easily discriminable. Conversely, if the neighbourhood exhibits complex geometric characteristics, the input likely resides in a boundary region between emotional clusters, indicating inherent ambiguity.
 
-To measure this geometric complexity, the project uses Topological Data Analysis (TDA), specifically a technique called persistent homology. The application of persistent homology to detect ambiguity in social media sentiment represents a novel contribution to the field of affective computing. Recent studies on emotion topology~\cite{emotion_topology} have explored the fundamental components of emotions from text using word embeddings, but the application of local TDA for ambiguity detection remains a novel frontier.
+To measure this geometric complexity, the project uses Topological Data Analysis (TDA), specifically a technique called persistent homology. The application of persistent homology to detect ambiguity in textual sentiment represents a novel contribution to the field of affective computing. Recent studies on emotion topology~\cite{emotion_topology} have explored the fundamental components of emotions from text using word embeddings, but the application of local TDA for ambiguity detection remains a novel frontier.
 
 A third motivation arises from an analysis of the performance of existing models on the
 GoEmotions dataset. Models such as BERT-based classifiers and SVM systems achieve
@@ -30,7 +30,7 @@ disagreements among annotators. Furthermore, standard models often fail to captu
 \section{Problem Statement}
  
 The research problem addressed in this study is defined as follows. Given a short piece of text
-from a social media platform, the objective is to build a system that:
+from a textual source, the objective is to build a system that:
  
 \begin{enumerate}
     \item Classifies the text into one of three emotion categories: Positive, Negative, or
@@ -54,7 +54,7 @@ classifications.
 The primary objectives of this research are as follows:
 
 \begin{enumerate}
-    \item Build a sentiment classification system that works on informal social media text from
+    \item Build a sentiment classification system that works on formal textual data from
     the GoEmotions dataset.
     \item Use Topological Data Analysis, specifically Vietoris-Rips persistent homology, to
     measure the geometric complexity of the neighbourhood of each input in the embedding
@@ -70,8 +70,8 @@ The primary objectives of this research are as follows:
 
 \section{Scope}
 
-The system works with English text. It is trained on Reddit comments from the GoEmotions
-dataset. It returns one of four outputs: Positive, Negative, Neutral, or Ambiguous. The system
+The system works with English text. It is trained on the GoEmotions dataset, which contains
+formal textual samples. It returns one of four outputs: Positive, Negative, Neutral, or Ambiguous. The system
 is designed to run on a standard laptop CPU for inference, though training benefits from GPU
 availability.
 

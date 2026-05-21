@@ -26,6 +26,4 @@ This folder contains the source code for the Emotion Detection project utilizing
 ## Project Structure
 - `tdanew4.py`: Main script to build the model, generate topological features, and train the XGBoost classifier.
 - `evaluation.py`: Script used for evaluating the performance and accuracy of the trained model.
-- `visualize.py` & variants: Scripts to generate persistence diagrams, landscapes, and point clouds.
-- `images/`: Contains structural and diagrammatic exports.
 - `save/`: Stores generated case visualisations.

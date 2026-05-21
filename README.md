@@ -20,6 +20,25 @@ The repository is organized for clarity and professional academic standards:
 - `Slides/`: LaTeX Beamer presentation files and associated assets.
 - `code/`: Python source code for the TDA-based emotion detection model (see `code/README.md` for setup instructions).
 
+## Example Output
+Below is an example of the interaction from running the model (`tdanew4.py`) in the terminal:
+
+```text
+Using device: cuda
+Loading saved model...
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 4262.46it/s]
+
+System ready
+
+Enter text: I am incredibly happy today!
+Prediction: POSITIVE
+Enter text: I feel so lost and terrible
+Prediction: NEGATIVE
+Enter text: i don't know how i feel
+Prediction: NEGATIVE
+Enter text: exit
+```
+
 ## Compilation
 To generate the final PDF report, compile the main file twice using `pdflatex`:
 ```bash

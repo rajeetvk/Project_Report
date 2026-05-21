@@ -6,7 +6,7 @@ A B.Tech Project Report by **Arjeet Singh** (230101078), submitted to the Depart
 This project presents a novel classification pipeline for detecting emotional states from textual data while explicitly quantifying semantic uncertainty. Unlike conventional NLP models that force a classification on every input, this system leverages **Topological Data Analysis (TDA)** to identify "Ambiguous" cases where the semantic content is unclear or sits on the boundary between emotion classes (Positive, Negative, Neutral).
 
 ## Key Features
-- **Hybrid Feature Extraction:** Combines SentenceTransformers (all-mpnet-base-v2), TF-IDF, and TDA persistence landscapes.
+- **Hybrid Feature Extraction:** Combines SentenceTransformers (all-MiniLM-L6-v2), TF-IDF, and TDA persistence landscapes.
 - **Topological Ambiguity Detection:** Uses Vietoris-Rips persistent homology and H1 loop counts to detect geometric complexity in the embedding space.
 - **Ensemble Classification:** Utilizes XGBoost models in a one-vs-rest configuration.
 - **Principled Abstention:** Implements decision rules based on confidence gaps and topological signals to flag ambiguous inputs.

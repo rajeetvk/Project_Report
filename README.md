@@ -21,22 +21,50 @@ The repository is organized for clarity and professional academic standards:
 - `code/`: Python source code for the TDA-based emotion detection model (see `code/README.md` for setup instructions).
 
 ## Example Output
-Below is an example of the interaction from running the model (`tdanew4.py`) in the terminal:
+Below is an example of the interaction from running the model (`ambiguity.py`) in the terminal. The model actively calculates confidence gaps and Topological Loop counts (H1) to detect ambiguous data:
 
 ```text
-Using device: cuda
-Loading saved model...
-Loading weights: 100%|██████████| 199/199 [00:00<00:00, 4262.46it/s]
-
+Loading model...
+Loading weights: 100%|████████████████| 199/199 [00:00<00:00, 8984.09it/s]
 System ready
 
-Enter text: I am incredibly happy today!
-Prediction: POSITIVE
+Enter text: I am incredibly happy today
+
+--- DEBUG INFO ---
+Input          : I am incredibly happy today
+Probabilities  : POS=0.5373  NEG=0.0474  NEU=0.0145
+Confidence gap : 0.4899  (threshold < 0.3)
+Loop count (H1): 6  (extreme >= 14, moderate >= 10)
+Final Result   : POSITIVE
+
 Enter text: I feel so lost and terrible
-Prediction: NEGATIVE
+
+--- DEBUG INFO ---
+Input          : I feel so lost and terrible
+Probabilities  : POS=0.2264  NEG=0.7589  NEU=0.0752
+Confidence gap : 0.5324  (threshold < 0.3)
+Loop count (H1): 12  (extreme >= 14, moderate >= 10)
+Final Result   : NEGATIVE
+
 Enter text: i don't know how i feel
-Prediction: NEGATIVE
-Enter text: exit
+
+--- DEBUG INFO ---
+Input          : i don't know how i feel
+Probabilities  : POS=0.0738  NEG=0.5692  NEU=0.1989
+Confidence gap : 0.3703  (threshold < 0.3)
+Loop count (H1): 14  (extreme >= 14, moderate >= 10)
+Trigger        : EXTREME topology
+Final Result   : AMBIGUOUS
+
+Enter text: i will kill you
+
+--- DEBUG INFO ---
+Input          : i will kill you
+Probabilities  : POS=0.0625  NEG=0.6266  NEU=0.5617
+Confidence gap : 0.0649  (threshold < 0.3)
+Loop count (H1): 4  (extreme >= 14, moderate >= 10)
+Trigger        : VERY LOW confidence gap (no dominant class)
+Final Result   : AMBIGUOUS
 ```
 
 ## Compilation

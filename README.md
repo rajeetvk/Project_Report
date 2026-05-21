@@ -18,6 +18,7 @@ The repository is organized for clarity and professional academic standards:
 - `sections/`: Front matter (Abstract, Declaration, Certificate, etc.) and Bibliography.
 - `images/`: High-quality figures, diagrams, and TDA plots used in the report.
 - `Slides/`: LaTeX Beamer presentation files and associated assets.
+- `code/`: Python source code for the TDA-based emotion detection model (see `code/README.md` for setup instructions).
 
 ## Compilation
 To generate the final PDF report, compile the main file twice using `pdflatex`:

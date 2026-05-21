@@ -1,0 +1,16 @@
+flowchart TD
+    Start([Receive Input Features]) --> GetProbs[Get Probabilities from XGBoost]
+    GetProbs --> GetLoops[Count H1 Loops from TDA Diagram]
+    
+    GetLoops --> CalcGap[Calculate Confidence Gap:<br/>Max Prob - 2nd Max Prob]
+    
+    CalcGap --> CheckExtreme{Loops >= 14?}
+    CheckExtreme -->|Yes| Ambiguous[Output: AMBIGUOUS<br/>Trigger: Extreme Topology]
+    
+    CheckExtreme -->|No| CheckMod{Loops >= 10<br/>AND Gap < 0.30?}
+    CheckMod -->|Yes| Ambiguous2[Output: AMBIGUOUS<br/>Trigger: Mod Topology + Low Gap]
+    
+    CheckMod -->|No| CheckLowGap{Gap < 0.10?}
+    CheckLowGap -->|Yes| Ambiguous3[Output: AMBIGUOUS<br/>Trigger: Very Low Gap]
+    
+    CheckLowGap -->|No| FinalEmotion[Output: Highest Probability Emotion]

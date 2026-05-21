@@ -1,0 +1,27 @@
+flowchart LR
+    A[Raw Text String] --> B(SentenceTransformer)
+    A --> C(TF-IDF Vectorizer)
+    
+    B --> |Dense Vector| V1[v_dense]
+    C --> |Sparse Vector| V2[v_tfidf]
+    
+    B --> D[(Pre-computed Train Data)]
+    D --> |Cosine Similarity| E(NearestNeighbors K=24)
+    V1 --> E
+    
+    E --> |24 Neighbors x Dim| F(Vietoris-Rips)
+    F --> |Persistence Diagram| G(Persistence Landscape)
+    G --> |Landscape Features| V3[v_topo]
+    
+    V1 --> H{Concatenate}
+    V2 --> H
+    V3 --> H
+    
+    H --> |v_final| I(XGBoost Ensemble)
+    
+    I --> |"[P_pos, P_neg, P_neu]"| J{Ambiguity Evaluator}
+    F --> |Loop Count| J
+    
+    J --> |Prob Gap < 0.30 AND Mod Loops| K[AMBIGUOUS]
+    J --> |Loops > 14| K
+    J --> |Prob Gap > 0.30 AND Low Loops| L[argmax Emotion]

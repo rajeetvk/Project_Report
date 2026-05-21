@@ -16,3 +16,13 @@
 
 # PDF output (optional - remove this line if you want to track the PDF)
 # *.pdf
+
+# Python / Model files
+__pycache__/
+*.pyc
+myenv/
+venv/
+*.joblib
+dataset/
+embedder_model/
+.env

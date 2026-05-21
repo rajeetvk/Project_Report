@@ -1,0 +1,44 @@
+graph TD
+    User((User Input)) --> |Raw Text| Input[Input Processing]
+    
+    Input --> FE[Feature Extraction Module]
+    
+    subgraph Feature Extraction
+        SE[Semantic Embedder<br/>SentenceTransformer]
+        LF[Lexical Extractor<br/>TF-IDF Vectorizer]
+    end
+    
+    FE --> SE
+    FE --> LF
+    
+    SE --> |Dense Vector| TDA[Topological Engine]
+    
+    subgraph Topological Data Analysis
+        KNN[K-Nearest Neighbors<br/>k=24]
+        VR[Vietoris-Rips Persistence]
+        PL[Persistence Landscape]
+    end
+    
+    TDA --> KNN
+    KNN --> |Local Point Cloud| VR
+    VR --> |Persistence Diagram| PL
+    
+    SE --> |v_dense| Fusion[Feature Fusion Layer]
+    LF --> |v_tfidf| Fusion
+    PL --> |v_topo| Fusion
+    
+    Fusion --> |Concatenated Vector| Classifiers[Classification Module]
+    
+    subgraph XGBoost Classifiers
+        XGB1[XGBoost - Positive]
+        XGB2[XGBoost - Negative]
+        XGB3[XGBoost - Neutral]
+    end
+    
+    Classifiers --> XGB1 & XGB2 & XGB3
+    
+    XGB1 & XGB2 & XGB3 --> |Class Probabilities| Decision[Decision & Ambiguity Logic]
+    VR --> |H1 Betti Numbers / Loops| Decision
+    
+    Decision --> |High Confidence| Emotion[Predicted Emotion]
+    Decision --> |Low Confidence / High Loops| Ambiguous[AMBIGUOUS]

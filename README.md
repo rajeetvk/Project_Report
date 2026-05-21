@@ -23,7 +23,7 @@ The repository is organized for clarity and professional academic standards:
 ## Example Output
 Below is a screenshot and transcription of the interaction from running the model (`ambiguity.py`) in the terminal. The model actively calculates confidence gaps and Topological Loop counts (H1) to detect ambiguous data:
 
-![Final Output Console](images/final_output.png)
+![Final Output Console](final_output/final_output.png)
 
 
 ```text

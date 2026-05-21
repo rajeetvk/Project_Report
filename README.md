@@ -19,6 +19,7 @@ The repository is organized for clarity and professional academic standards:
 - `images/`: High-quality figures, diagrams, and TDA plots used in the report.
 - `Slides/`: LaTeX Beamer presentation files and associated assets.
 - `code/`: Python source code for the TDA-based emotion detection model (see `code/README.md` for setup instructions).
+- `final_output/`: Contains the screenshot of the model's interactive terminal output.
 
 ## Example Output
 Below is a screenshot and transcription of the interaction from running the model (`ambiguity.py`) in the terminal. The model actively calculates confidence gaps and Topological Loop counts (H1) to detect ambiguous data:
